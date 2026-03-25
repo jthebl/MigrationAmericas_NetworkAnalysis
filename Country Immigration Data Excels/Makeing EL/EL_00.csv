@@ -1,0 +1,44 @@
+"Source","Target","Weight"
+"Argentina","Canada",0.40748675
+"Argentina","United States",0.422969916
+"Bolivia","Argentina",5.321709316
+"Bolivia","United States",0.181130178
+"Bolivia","Uruguay",3.312556188
+"Brazil","Canada",0.390750918
+"Brazil","Paraguay",9.883005822
+"Brazil","United States",0.724325277
+"Canada","United States",2.081074669
+"Chile","Argentina",4.304161691
+"Chile","Brazil",0.059108732
+"Chile","United States",0.266400726
+"Chile","Venezuela",0.781403576
+"Colombia","Canada",0.555551923
+"Colombia","Ecuador",4.696275299
+"Colombia","Panama",6.908692202
+"Colombia","United States",1.804234103
+"Colombia","Venezuela",22.3125715
+"Costa Rica","United States",0.227512495
+"Ecuador","Canada",0.333098082
+"Ecuador","United States",1.048589302
+"Ecuador","Venezuela",0.899987186
+"El Salvador","Canada",1.248777912
+"El Salvador","United States",2.96169908
+"Guatemala","Canada",0.443774695
+"Guatemala","Mexico",0.185529001
+"Guatemala","United States",1.731968939
+"Honduras","United States",1.012618399
+"Mexico","Canada",1.135802955
+"Mexico","United States",32.16569075
+"Nicaragua","Costa.Rica",56.66628912
+"Nicaragua","United States",0.792130944
+"Panama","United States",0.364701531
+"Paraguay","Argentina",6.736231378
+"Paraguay","United States",0.037321188
+"Peru","Argentina",2.072581159
+"Peru","Canada",0.551570284
+"Peru","Chile",1.949284922
+"Peru","United States",0.988057412
+"Peru","Venezuela",1.173913173
+"Uruguay","Argentina",2.475843556
+"Uruguay","Brazil",0.140468001
+"Venezuela","United States",0.348618917
