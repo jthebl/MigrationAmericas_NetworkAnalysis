@@ -1,7 +1,7 @@
 ---
 title: "Matrices"
 author: "Joey"
-date: "`r Sys.Date()`"
+date: "2026-03-28"
 output: 
   html_document: 
     keep_md: true
@@ -73,7 +73,8 @@ in the matrix position that represents the inverse of the country-pair order. E.
 A and B, if column-A and row-B have a value of 'x', then the corresponding column-B and row-A matrix
 position with have a '-x' value).
 
-```{r eval=FALSE, include=TRUE}
+
+``` r
 GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year) {
   
   setwd(matrix_dir)
@@ -106,14 +107,14 @@ GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year) {
              sheetName="RawMatrix", 
              row.names=TRUE)
 }
-
 ```
 
 
 ### Additional script that generates additional matrices 
 The code below generates matrices that reflect only positive values (i.e. the net flows),
 with respective negative values filled in with the flag-code "999". 
-```{r eval=FALSE, include=TRUE}
+
+``` r
 # Simplified Matrix: Positive Only (i.e. Net-flow of immigrants)
   diff_m_simp <- diff_m
   for (i in 1:nrow(diff_m_simp)) {
@@ -123,17 +124,16 @@ with respective negative values filled in with the flag-code "999".
       }
     }
   }
-  
 ```
 
 The code below takes a different approach in dividing the migrant flows by the population
 of the 'receiving' country (i.e. column-country) for the given year represented by the matrix. 
 
-```{r eval=FALSE, include=TRUE}
+
+``` r
 # Difference relative to Population size of Receiving country
 
   population_df <- read.xlsx("Population_1990")  
-  
 ```
 
 
