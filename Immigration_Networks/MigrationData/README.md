@@ -57,3 +57,8 @@ was converted into a matrix.
 
 # Step 1: Constructing the Matrix
 
+This step requires some relatively straightforward logic as it pertains to the calculations for determining the flow 
+of migrants between country-pairs. See the code below for specifics on how the associated matrices were constructed:
+
+
+
