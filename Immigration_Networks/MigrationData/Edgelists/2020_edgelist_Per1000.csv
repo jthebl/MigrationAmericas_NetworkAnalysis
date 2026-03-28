@@ -1,0 +1,65 @@
+Country1,Country2,Weight
+Argentina,Canada,0.536399746
+Argentina,Mexico,0.118084813
+Argentina,United States,0.647318078
+Bolivia,Argentina,8.275932438
+Bolivia,Brazil,0.097625118
+Bolivia,Chile,6.376356281
+Bolivia,Peru,0.47313081
+Bolivia,United States,0.22530031
+Brazil,Argentina,0.272320016
+Brazil,Canada,0.777629652
+Brazil,Paraguay,4.213787575
+Brazil,United States,1.495785603
+Canada,United States,1.573011571
+Chile,Argentina,2.995916853
+Chile,United States,0.219632682
+Colombia,Canada,1.939469502
+Colombia,Chile,8.711903137
+Colombia,Costa Rica,4.708084649
+Colombia,Ecuador,10.50321029
+Colombia,Mexico,0.113330396
+Colombia,Panama,11.0270149
+Colombia,United States,2.407213349
+Costa Rica,United States,0.246807691
+Ecuador,Canada,0.359634638
+Ecuador,Chile,1.569748089
+Ecuador,United States,1.200195826
+El Salvador,Canada,1.355813112
+El Salvador,Costa Rica,3.137067794
+El Salvador,Guatemala,0.671013535
+El Salvador,Mexico,0.116843856
+El Salvador,United States,4.245195607
+Guatemala,Canada,0.478249867
+Guatemala,Mexico,0.212870658
+Guatemala,United States,3.678369331
+Honduras,Mexico,0.288227771
+Honduras,United States,2.314455784
+Mexico,Canada,2.009880849
+Mexico,United States,30.37394707
+Nicaragua,Canada,0.272725565
+Nicaragua,Costa Rica,67.45162553
+Nicaragua,Panama,3.498219023
+Nicaragua,United States,0.759006006
+Panama,United States,0.250442103
+Paraguay,Argentina,13.74891024
+Paraguay,United States,0.13433125
+Peru,Argentina,3.754609188
+Peru,Canada,0.688747167
+Peru,Chile,11.49462196
+Peru,United States,1.19206296
+Uruguay,Argentina,2.226271774
+Uruguay,Brazil,0.074480642
+Uruguay,United States,0.149639285
+Venezuela,Argentina,3.680187832
+Venezuela,Brazil,1.144593957
+Venezuela,Canada,0.560580623
+Venezuela,Chile,26.2853174
+Venezuela,Colombia,17.03995756
+Venezuela,Costa Rica,5.393579549
+Venezuela,Ecuador,20.17563597
+Venezuela,Mexico,0.517843592
+Venezuela,Panama,27.51597016
+Venezuela,Peru,27.22230906
+Venezuela,United States,1.495604336
+Venezuela,Uruguay,2.990733304
