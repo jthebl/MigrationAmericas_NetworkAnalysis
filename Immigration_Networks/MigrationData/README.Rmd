@@ -124,7 +124,7 @@ GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year) {
 The code below generates matrices that reflect only positive values (i.e. the net flows),
 with respective negative values filled in with the flag-code "999". 
 ```{r}
-# Simplified Matrix: Positive Only (i.e. Net-flow of immigrants) ----------
+# Simplified Matrix: Positive Only (i.e. Net-flow of immigrants)
   diff_m_simp <- diff_m
   for (i in 1:nrow(diff_m_simp)) {
     for (j in 1:ncol(diff_m_simp)) {
@@ -140,7 +140,7 @@ The code below takes a different approach in dividing the migrant flows by the p
 of the 'receiving' country (i.e. column-country) for the given year represented by the matrix. 
 
 ```{r}
-# Difference relative to Population size of Receiving country (i.e --------
+# Difference relative to Population size of Receiving country
 
   population_df <- read.xlsx("Population_1990")  
   
