@@ -31,7 +31,7 @@ criteria was used for selecting countries:
       important, is irrelevant to the present analysis given the complete inclusion of both the North
       and South American regions).
       
-From this filtering-protocol, the following nations, and their respective migration data, were selected.
+From this filtering-protocol, the following nations, and their respective migration data, were selected:
   Argentina
   Bolivia
   Brazil
@@ -52,7 +52,7 @@ From this filtering-protocol, the following nations, and their respective migrat
   Uruguay
   Venezuela
   
-The following section will review how, from this raw data of the movement of individuals between nation-pairs, 
+The following section will review how this raw data of migration between nation-pairs, 
 was converted into a matrix.
 
 # Step 1: Constructing the Matrix
