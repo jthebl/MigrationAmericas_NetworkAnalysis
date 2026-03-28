@@ -63,7 +63,47 @@ GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year) {
 
 # Difference relative to Population size of Receiving country (i.e --------
 
-  population_df <- read.xlsx("Population_1990")  
+  population_df <- read.csv("Population_1990.csv") 
+  pop_vec <- population_df[,2]
+  
+  # Scale migration flows by receiving-country population
+  scaled_m <- sweep(diff_m, 
+                         MARGIN = 2, 
+                         STATS = pop_vec, 
+                         FUN = "/")
+  
+  # Scale per 1000 citizens of receiving country (makes values a bit more manageable as it pertains to interpretation)
+  scaled_m_per_1000 <- sweep(scaled_m,
+                           MARGIN = 2,
+                           STATS = 1000,
+                           FUN = "*")
+  
+  
+
+# Simple Binary for igraph networks ---------------------------------------
+
+  diff_m_binary <- diff_m
+  for (i in 1:nrow(diff_m_binary)) {
+    for (j in 1:ncol(diff_m_binary)) {
+      if (diff_m_binary[i,j] < 9999) {
+        diff_m_binary[i,j] <-  0
+      }
+    }
+  }  
+  
+  
+
+# Histogram to assess distribution of Migration densities by recei --------
+
+  hist(as.vector(scaled_m_per_1000),
+       breaks = 1000,          # increase or decrease this number
+       main = "Histogram of Matrix Values",
+       xlab = "Flow Value",
+       col = "steelblue",
+       border = "white",
+       xlim = c(-5,5)
+       )
+       
   
   
 
@@ -76,13 +116,31 @@ GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year) {
   
   write.xlsx(diff_m, 
              file=paste0("DifferenceMatrices_",year,".xlsx"), 
-             sheetName="DiffMatrix", 
+             sheetName="DM", 
              append=TRUE, 
              row.names=TRUE)
   
   write.xlsx(diff_m_simp, 
              file=paste0("DifferenceMatrices_",year,".xlsx"), 
-             sheetName="DiffMatrix_simp", 
+             sheetName="DM_simp", 
+             append=TRUE, 
+             row.names=TRUE)
+  
+  write.xlsx(scaled_m, 
+             file=paste0("DifferenceMatrices_",year,".xlsx"), 
+             sheetName="DM_PopScaled", 
+             append=TRUE, 
+             row.names=TRUE)
+  
+  write.xlsx(scaled_m_per_1000, 
+             file=paste0("DifferenceMatrices_",year,".xlsx"), 
+             sheetName="DM_PopScaled_Per1000", 
+             append=TRUE, 
+             row.names=TRUE)
+  
+  write.xlsx(diff_m_binary, 
+             file=paste0("DifferenceMatrices_",year,".xlsx"), 
+             sheetName="DM_10000_binary", 
              append=TRUE, 
              row.names=TRUE)
   
