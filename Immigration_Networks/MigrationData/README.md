@@ -127,14 +127,49 @@ with respective negative values filled in with the flag-code "999".
 ```
 
 The code below takes a different approach in dividing the migrant flows by the population
-of the 'receiving' country (i.e. column-country) for the given year represented by the matrix. 
+of the 'receiving' country (i.e. column-country) for the given year represented by the matrix.
+This therefore reflects a "density" related metric of immigration. 
 
 
 ``` r
 # Difference relative to Population size of Receiving country
-
-  population_df <- read.xlsx("Population_1990")  
+  population_df <- read.csv("Population_1990.csv") 
+  pop_vec <- population_df[,2] #Convert population column into vector for below calculations
+  
+  # Scale migration flows by receiving-country population
+  scaled_m <- sweep(diff_m,
+                    MARGIN = 2,
+                    STATS = pop_vec,
+                    FUN = "/")
+  
+  # Scale per 1000 citizens of receiving country (makes values a bit more manageable as it pertains to interpretation)
+  scaled_m_per_1000 <- sweep(scaled_m,
+                             MARGIN = 2,
+                             STATS = 1000,
+                             FUN = "*") 
 ```
 
 
+Lastly, for the sake of the subsequent analysis with igraph, the code below generates a binary
+matrix in which a value of "1" is given for any nation-pair in which the recieving country
+received >=10,000 migrants. This will both minimize the complexity of the resutling network figures, 
+while also filtering for "major flows" of migrants as it pertains to the region at large. 
 
+``` r
+# Simple Binary for igraph networks ---------------------------------------
+
+  diff_m_binary <- diff_m
+  for (i in 1:nrow(diff_m_binary)) {
+    for (j in 1:ncol(diff_m_binary)) {
+      if (diff_m_binary[i,j] < 9999) {
+        diff_m_binary[i,j] <-  0
+      }
+    }
+  }  
+```
+
+
+A follow-up analysis will qualify migrant flows not based on an absolute threshold (i.e. the 10,000 
+migrants as a "floor" for inclusion) but instead account for significant migration flows relative to the
+receiving country's population size. This set-up would provide insight into the context of nation-specific
+experiences in immigration, while the above analysis is geared toward the whole of the region context.
