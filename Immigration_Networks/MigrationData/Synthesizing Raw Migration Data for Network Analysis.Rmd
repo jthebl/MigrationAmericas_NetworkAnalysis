@@ -2,7 +2,7 @@
 title: "Synthesizing Raw Migration Data for Network Analysis"
 author: "Joey Hebl"
 date: "2026-03-28"
-output: html_document
+output: html_document:
   keep_md: true 
 ---
 
