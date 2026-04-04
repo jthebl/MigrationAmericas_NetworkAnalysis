@@ -1,7 +1,7 @@
 ---
-title: "README"
-author: "Joey Hebl"
-date: "2026-03-28"
+title: "Matrices"
+author: "Joey"
+date: "2026-04-04"
 output: 
   html_document: 
     keep_md: true
@@ -32,28 +32,29 @@ criteria was used for selecting countries:
       and South American regions).
       
 From this filtering-protocol, the following nations, and their respective migration data, were selected:
-  Argentina
-  Bolivia
-  Brazil
-  Canada
-  Chile
-  Colombia
-  Costa Rica
-  Ecuador
-  El Salvador
-  Guatemala
-  Honduras
-  Mexico
-  Nicaragua
-  Panama
-  Paraguay
-  Peru
-  United States
-  Uruguay
-  Venezuela
+  Argentina,
+  Bolivia,
+  Brazil,
+  Canada,
+  Chile,
+  Colombia,
+  Costa Rica,
+  Ecuador,
+  El Salvador,
+  Guatemala,
+  Honduras,
+  Mexico,
+  Nicaragua,
+  Panama,
+  Paraguay,
+  Peru,
+  United States,
+  Uruguay,
+  Venezuela.
   
-The following section will review how this raw data of migration between nation-pairs, 
-was converted into a matrix.
+The following section will review how this raw data of migration between nation-pairs was converted into a matrix.
+
+
 
 # Step 1: Constructing the Matrix
 
@@ -61,4 +62,114 @@ This step requires some relatively straightforward logic as it pertains to the c
 of migrants between country-pairs. See the code below for specifics on how the associated matrices were constructed:
 
 
+### R-script: Calculate differences in migration between nation-pairs
+This code generates an excel containing the migration matrix. Of note, the column of the matrix
+represents the "recipient" country while the rows are the "sending" country. For example, taking
+any value 'x' within the matrix, the corresponding country-column is the country that recieves
+'x' number of migrants from the corresponding country-row. If 'x' is a positive number, then it
+indicates net-flow "to" the column-country, while a negative number indicates net-flow "out" of the 
+column-country (you can confirm this by noting that every value has a corresponding "opposite" value
+in the matrix position that represents the inverse of the country-pair order. E.g. for country
+A and B, if column-A and row-B have a value of 'x', then the corresponding column-B and row-A matrix
+position with have a '-x' value).
 
+
+``` r
+GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year) {
+  
+  setwd(matrix_dir)
+  
+  
+  # Load Data (i.e. the matrix)
+  df_matrix_xl <- read_xlsx(Raw_matrix)
+  countries <- df_matrix_xl[, 1]           # extract row names
+  df_matrix  <- df_matrix_xl[, -1]         # drop first column (which has country names)
+  df_matrix <- as.matrix(df_matrix)        # Convert tibble to a matrix
+  rownames(df_matrix) <- countries[[1]]    # add back in rownames (i.e. country names) to matrix
+  
+  
+  # The Code ----------------------------------------------------------------
+  
+  
+  # Create the countries matrix; square matrix (i.e. name and order of rows/columns the same)
+  diff_m <- matrix(0, 
+                   nrow = length(countries), #Sending countries
+                   ncol = length(countries), #Receiving countries
+                   dimnames = list(countries, countries)) 
+  
+  diff_m <- df_matrix - t(df_matrix) #calculates a matrix that has the difference in migration between country pairs. 
+  
+  
+  # Save outputs ------------------------------------------------------------
+  
+  write.xlsx(df_matrix, 
+             file=paste0("DifferenceMatrices_",year,".xlsx"), 
+             sheetName="RawMatrix", 
+             row.names=TRUE)
+}
+```
+
+
+### Additional script that generates additional matrices 
+The code below generates matrices that reflect only positive values (i.e. the net flows),
+with respective negative values filled in with the flag-code "999". 
+
+``` r
+# Simplified Matrix: Positive Only (i.e. Net-flow of immigrants)
+  diff_m_simp <- diff_m
+  for (i in 1:nrow(diff_m_simp)) {
+    for (j in 1:ncol(diff_m_simp)) {
+      if (diff_m_simp[i,j] < 0) {
+        diff_m_simp[i,j] <-  999
+      }
+    }
+  }
+```
+
+The code below takes a different approach in dividing the migrant flows by the population
+of the 'receiving' country (i.e. column-country) for the given year represented by the matrix.
+This therefore reflects a "density" related metric of immigration. 
+
+
+``` r
+# Difference relative to Population size of Receiving country
+  population_df <- read.csv("Population_1990.csv") 
+  pop_vec <- population_df[,2] #Convert population column into vector for below calculations
+  
+  # Scale migration flows by receiving-country population
+  scaled_m <- sweep(diff_m,
+                    MARGIN = 2,
+                    STATS = pop_vec,
+                    FUN = "/")
+  
+  # Scale per 1000 citizens of receiving country (makes values a bit more manageable as it pertains to interpretation)
+  scaled_m_per_1000 <- sweep(scaled_m,
+                             MARGIN = 2,
+                             STATS = 1000,
+                             FUN = "*") 
+```
+
+
+Lastly, for the sake of the subsequent analysis with igraph, the code below generates a binary
+matrix in which a value of "1" is given for any nation-pair in which the recieving country
+received >=10,000 migrants. This will both minimize the complexity of the resutling network figures, 
+while also filtering for "major flows" of migrants as it pertains to the region at large. 
+
+``` r
+# Simple Binary for igraph networks ---------------------------------------
+
+  diff_m_binary <- diff_m
+  for (i in 1:nrow(diff_m_binary)) {
+    for (j in 1:ncol(diff_m_binary)) {
+      if (diff_m_binary[i,j] < 9999) {
+        diff_m_binary[i,j] <-  0
+      }
+    }
+  }  
+```
+
+
+A follow-up analysis will qualify migrant flows not based on an absolute threshold (i.e. the 10,000 
+migrants as a "floor" for inclusion) but instead account for significant migration flows relative to the
+receiving country's population size. This set-up would provide insight into the context of nation-specific
+experiences in immigration, while the above analysis is geared toward the whole of the region context.
