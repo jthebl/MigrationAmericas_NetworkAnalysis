@@ -492,16 +492,151 @@ it pertains to the region at large.</p>
     for (j in 1:ncol(diff_m_binary)) {
       if (diff_m_binary[i,j] &lt; 9999) {
         diff_m_binary[i,j] &lt;-  0
+      } else {
+        diff_m_binary[i,j] &lt;- 1
       }
     }
-  }  </code></pre>
-<p>A follow-up analysis will qualify migrant flows not based on an
+  }   </code></pre>
+<p>In follow-up analysis will qualify migrant flows not based on an
 absolute threshold (i.e. the 10,000 migrants as a “floor” for inclusion)
 but instead account for significant migration flows relative to the
 receiving country’s population size. This set-up would provide insight
 into the context of nation-specific experiences in immigration, while
 the above analysis is geared toward the whole of the region context.</p>
 </div>
+</div>
+<div id="step-2-constructing-edgelists" class="section level1">
+<h1>Step 2: Constructing EdgeLists</h1>
+<p>When constructing a network using the igraph package, you have the
+ability to generate the network via an adjacency matrix (which we have
+essentially done in Step 1) or via an Edgelist, which simply is a
+dataframe in which each entry (i.e. each row) represents and “edge”
+within our network (i.e. a connection between two nodes or entities in
+the network). The code below takes the binary matrix, which has a “1”
+for every country-pair in which there is a positive migration flow of
+&gt;= 10,000, and constructs an edgelist given this threshold. It also
+adds additional attribute columns, specifically data relevant to the
+absolute number of migrants traveling in the indicated direction
+(i.e. from Origin to destination country), as well as converting this
+number to reflect a rate of immigrants per 1000 citizens in the country
+of origin and destination (separately).</p>
+<pre class="r"><code># Load Space ----
+library(readxl)
+library(tidyverse)
+library(openxlsx)
+
+
+GenerateEdgeListFx &lt;- function(parent_dir, 
+                               DifferenceMatrices_xlsx, 
+                               EdgeList_dir, 
+                               year) {
+  
+  # Set working directory
+  setwd(parent_dir)
+  
+  
+  # Load Data ----
+  
+  ## First binary matrix
+  
+  ### Read in matrix (which technically is a data.frame)
+  m_binary &lt;- read.xlsx(xlsxFile = paste0(&quot;Matrices/&quot;,DifferenceMatrices_xlsx),
+                        sheet = &quot;DM_10000_binary&quot;,
+                        colNames = TRUE,
+                        rowNames = TRUE)
+  
+  m_binary &lt;- as.matrix(m_binary) # converts to a matrix
+  
+  
+  ## Next, absolute-immigration-amount matrix
+  m_abs &lt;- read.xlsx(xlsxFile = paste0(&quot;Matrices/&quot;,DifferenceMatrices_xlsx),
+                     sheet = &quot;DiffMat_Pos&quot;,
+                     colNames = TRUE,
+                     rowNames = TRUE)
+  
+  m_abs &lt;- as.matrix(m_abs)
+  
+  
+  ## Next, population-scaled matrix (i.e. migrants per 1000 DESTINATION-country citizens)
+  m_scale_dest &lt;- read.xlsx(xlsxFile = paste0(&quot;Matrices/&quot;,DifferenceMatrices_xlsx),
+                            sheet = &quot;DiffMat_PopScaled_Per1000_dest&quot;,
+                            colNames = TRUE,
+                            rowNames = TRUE)
+  
+  m_scale_dest &lt;- as.matrix(m_scale_dest)
+  
+  
+  ## Next, population-scaled matrix (i.e. migrants per 1000 ORIGIN-country citizens)
+  m_scale_org &lt;- read.xlsx(xlsxFile = paste0(&quot;Matrices/&quot;,DifferenceMatrices_xlsx),
+                           sheet = &quot;DiffMat_PopScaled_Per1000_org&quot;,
+                           colNames = TRUE,
+                           rowNames = TRUE)
+  
+  m_scale_org &lt;- as.matrix(m_scale_org)
+  
+  
+  
+  # Construct Edgelist ----
+  
+  ## First the base edgelist: binary
+  EL_0 &lt;- as.data.frame(as.table(m_binary)) %&gt;% # Convert matrix to a long table
+    rename(
+      Origin = Var1,
+      Destination = Var2,
+      Binary = Freq
+    )
+  
+  ## Edgelist with absolution migration
+  EL_abs &lt;- as.data.frame(as.table(m_abs)) %&gt;% # Convert matrix to a long table
+    rename(
+      Origin_2 = Var1,
+      Destination_2 = Var2,
+      Immigration_absolute = Freq
+    )
+  
+  ## Edgelist with immigration relative to 1000-citizens of DESTINATION
+  EL_dest &lt;- as.data.frame(as.table(m_scale_dest)) %&gt;% # Convert matrix to a long table
+    rename(
+      Origin_3 = Var1,
+      Destination_3 = Var2,
+      per1000_dest = Freq
+    )
+  
+  ## Edgelist with absolution migration
+  EL_pop &lt;- as.data.frame(as.table(m_scale_org)) %&gt;% # Convert matrix to a long table
+    rename(
+      Origin_4 = Var1,
+      Destination_4 = Var2,
+      per1000_org = Freq
+    )
+  
+  
+  
+  ## Now bind the two edgelists to add the immigration-density to the base edgelist
+  EL_1 &lt;- EL_0 %&gt;%
+    cbind(EL_abs, EL_dest, EL_pop) %&gt;%
+    select(Origin, Destination, Binary, Immigration_absolute, per1000_dest, per1000_org)
+  
+  
+  EL_2 &lt;- EL_1[EL_1$Binary==1,] %&gt;% # Filter for only binary values equal to 1, i.e. a true &quot;edge&quot;
+    select(Origin, Destination, Immigration_absolute, per1000_dest, per1000_org) # Remove the binary column. 
+  
+  
+  # Save EdgeList ----
+  
+  write.csv(EL_2,
+            file = paste0(EdgeList_dir,&quot;/EdgeList_&quot;,year,&quot;.csv&quot;),
+            row.names = FALSE
+  )
+  
+}</code></pre>
+</div>
+<div id="step-3-next-to-the-networks" class="section level1">
+<h1>Step 3: Next to the Networks</h1>
+<p>Now that we have collected, consolidated, and organized our raw
+immigration data, we can now begin to build out our visual networks,
+which we will walk through in the [Networks] (<a href="https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/main/Immigration_Networks/Networks_fromR" class="uri">https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/main/Immigration_Networks/Networks_fromR</a>)
+subfolder.</p>
 </div>
 
 
