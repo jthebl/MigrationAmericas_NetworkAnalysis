@@ -296,4 +296,4 @@ GenerateEdgeListFx <- function(parent_dir,
 
 # Step 3: Next to the Networks
 Now that we have collected, consolidated, and organized our raw immigration data, we can now begin to build
-out our visual networks, which we will walk through in the [Networks] (https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/main/Immigration_Networks/Networks_fromR) subfolder.
+out our visual networks, which we will walk through in the [Networks](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/main/Immigration_Networks/ConstructingNetworks) subfolder.
