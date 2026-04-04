@@ -70,26 +70,27 @@ GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year, populationCSV) {
   population_df <- read.csv(pop_file) 
   pop_vec <- population_df[,2]
   
-  # Scale migration flows by receiving-country population
-  scaled_m <- sweep(diff_m, 
+  # Scale migration flows by Destination-country population; only considering net-flow (i.e. positive nubmers of matrix)
+  scaled_m_dest <- sweep(diff_m_simp, 
                     MARGIN = 2, 
                     STATS = pop_vec, 
                     FUN = "/")
   
   # Scale per 1000 citizens of receiving country (makes values a bit more manageable as it pertains to interpretation)
-  scaled_m_per_1000 <- sweep(scaled_m,
+  scaled_m_per_1000_dest <- sweep(scaled_m_dest,
                              MARGIN = 2,
                              STATS = 1000,
                              FUN = "*")
   
-  # Scale per 1000 citizens of receiving country, but only considering the net-flow directions (i.e. only positive values)
-  scaled_m_net <- sweep(diff_m_simp,
-                        MARGIN = 2,
-                        STATS = pop_vec,
+  # Scale migration flows by Origin-country population
+  scaled_m_org <- sweep(diff_m_simp, 
+                        MARGIN = 1, 
+                        STATS = pop_vec, 
                         FUN = "/")
   
-  scaled_m_per_1000_net <- sweep(scaled_m_net,
-                                 MARGIN = 2,
+  # Scale per 1000 citizens of receiving country (makes values a bit more manageable as it pertains to interpretation)
+  scaled_m_per_1000_org <- sweep(scaled_m_org,
+                                 MARGIN = 1,
                                  STATS = 1000,
                                  FUN = "*")
   
@@ -124,17 +125,17 @@ GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year, populationCSV) {
   addWorksheet(wb, "DiffMat_Pos")
   writeData(wb, "DiffMat_Pos", diff_m_simp, rowNames = TRUE)
   
-  addWorksheet(wb, "DiffMat_PopScaled")
-  writeData(wb, "DiffMat_PopScaled", scaled_m, rowNames = TRUE)
+  addWorksheet(wb, "DiffMat_PopScaled_dest")
+  writeData(wb, "DiffMat_PopScaled_dest", scaled_m_dest, rowNames = TRUE)
   
-  addWorksheet(wb, "DiffMat_PopScaled_Per1000")
-  writeData(wb, "DiffMat_PopScaled_Per1000", scaled_m_per_1000, rowNames = TRUE)
+  addWorksheet(wb, "DiffMat_PopScaled_org")
+  writeData(wb, "DiffMat_PopScaled_org", scaled_m_org, rowNames = TRUE)
   
-  addWorksheet(wb, "DiffMat_PopScaled_Pos")
-  writeData(wb, "DiffMat_PopScaled_Pos", scaled_m_net, rowNames = TRUE)
+  addWorksheet(wb, "DiffMat_PopScaled_Per1000_dest")
+  writeData(wb, "DiffMat_PopScaled_Per1000_dest", scaled_m_per_1000_dest, rowNames = TRUE)
   
-  addWorksheet(wb, "DiffMat_PopScaled_Per1000_Pos")
-  writeData(wb, "DiffMat_PopScaled_Per1000_Pos", scaled_m_per_1000_net, rowNames = TRUE)
+  addWorksheet(wb, "DiffMat_PopScaled_Per1000_org")
+  writeData(wb, "DiffMat_PopScaled_Per1000_org", scaled_m_per_1000_org, rowNames = TRUE)
   
   addWorksheet(wb, "DM_10000_binary")
   writeData(wb, "DM_10000_binary", diff_m_binary, rowNames = TRUE)
