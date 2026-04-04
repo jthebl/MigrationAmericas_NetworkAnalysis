@@ -1,5 +1,5 @@
 ---
-title: "README"
+title: "Synthesizing Raw Migration Data for Network Analysis"
 author: "Joey Hebl"
 date: "2026-03-28"
 output: 
@@ -56,9 +56,4 @@ The following section will review how this raw data of migration between nation-
 was converted into a matrix.
 
 # Step 1: Constructing the Matrix
-
-This step requires some relatively straightforward logic as it pertains to the calculations for determining the flow 
-of migrants between country-pairs. See the code below for specifics on how the associated matrices were constructed:
-
-
 
