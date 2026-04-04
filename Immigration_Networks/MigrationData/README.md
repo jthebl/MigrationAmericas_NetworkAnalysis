@@ -18,7 +18,8 @@ time of, and that which is considered in the current version of this project). R
 migration data can be selected according to either Destination, Origin, or Both. 
 
 This excel can be filtered for the countries of interest, both from sending and receiving perspectives.
-Though an obvious point, it is worth mentioning here that on a small enough timescale, migration is, at it's core and as will be constructed in the present analysis, is a two-party phenomena (i.e. it involves a country of origin 
+Though an obvious point, it is worth mentioning here that on a small enough timescale, migration is, at it's core and as will be constructed in the present analysis, 
+a two-party phenomena (i.e. it involves a country of origin 
 and country of destination). A more nuanced, qualitative discussion of this and other aspects of this analysis
 can be reviewed in the Further Thoughts and Considerations file. 
 
@@ -28,7 +29,7 @@ criteria was used for selecting countries:
       nations though in a future analysis I hope to include these states as well).
   (2) Within the "American" Region (the continued debate regarding geographic nomenclature--and the inherent
       effects this has on socioeconomic factors, as well as cultural perceptions--,though 
-      important, is irrelevant to the present analysis given the complete inclusion of both the North
+      important, is not relevant to the present analysis given the complete inclusion of both the North
       and South American regions).
       
 From this filtering-protocol, the following nations, and their respective migration data, were selected:
@@ -71,7 +72,7 @@ indicates net-flow "to" the column-country, while a negative number indicates ne
 column-country (you can confirm this by noting that every value has a corresponding "opposite" value
 in the matrix position that represents the inverse of the country-pair order. E.g. for country
 A and B, if column-A and row-B have a value of 'x', then the corresponding column-B and row-A matrix
-position with have a '-x' value).
+position will have a '-x' value).
 
 
 ``` r
@@ -151,8 +152,8 @@ This therefore reflects a "density" related metric of immigration.
 
 
 Lastly, for the sake of the subsequent analysis with igraph, the code below generates a binary
-matrix in which a value of "1" is given for any nation-pair in which the recieving country
-received >=10,000 migrants. This will both minimize the complexity of the resutling network figures, 
+matrix in which a value of "1" is given for any nation-pair in which the receiving country
+received >=10,000 migrants. This will both minimize the complexity of the resulting network figures, 
 while also filtering for "major flows" of migrants as it pertains to the region at large. 
 
 ``` r
@@ -169,7 +170,3 @@ while also filtering for "major flows" of migrants as it pertains to the region 
 ```
 
 
-A follow-up analysis will qualify migrant flows not based on an absolute threshold (i.e. the 10,000 
-migrants as a "floor" for inclusion) but instead account for significant migration flows relative to the
-receiving country's population size. This set-up would provide insight into the context of nation-specific
-experiences in immigration, while the above analysis is geared toward the whole of the region context.
