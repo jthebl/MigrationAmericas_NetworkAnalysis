@@ -9,11 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Joey Hebl" />
+<meta name="author" content="Joey" />
 
-<meta name="date" content="2026-03-28" />
+<meta name="date" content="2026-04-04" />
 
-<title>README</title>
+<title>Matrices</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,9 +350,9 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">README</h1>
-<h4 class="author">Joey Hebl</h4>
-<h4 class="date">2026-03-28</h4>
+<h1 class="title toc-ignore">Matrices</h1>
+<h4 class="author">Joey</h4>
+<h4 class="date">2026-04-04</h4>
 
 </div>
 
@@ -385,12 +385,12 @@ has on socioeconomic factors, as well as cultural perceptions–,though
 important, is irrelevant to the present analysis given the complete
 inclusion of both the North and South American regions).</p>
 <p>From this filtering-protocol, the following nations, and their
-respective migration data, were selected: Argentina Bolivia Brazil
-Canada Chile Colombia Costa Rica Ecuador El Salvador Guatemala Honduras
-Mexico Nicaragua Panama Paraguay Peru United States Uruguay
-Venezuela</p>
+respective migration data, were selected: Argentina, Bolivia, Brazil,
+Canada, Chile, Colombia, Costa Rica, Ecuador, El Salvador, Guatemala,
+Honduras, Mexico, Nicaragua, Panama, Paraguay, Peru, United States,
+Uruguay, Venezuela.</p>
 <p>The following section will review how this raw data of migration
-between nation-pairs, was converted into a matrix.</p>
+between nation-pairs was converted into a matrix.</p>
 </div>
 <div id="step-1-constructing-the-matrix" class="section level1">
 <h1>Step 1: Constructing the Matrix</h1>
@@ -398,6 +398,110 @@ between nation-pairs, was converted into a matrix.</p>
 pertains to the calculations for determining the flow of migrants
 between country-pairs. See the code below for specifics on how the
 associated matrices were constructed:</p>
+<div id="r-script-calculate-differences-in-migration-between-nation-pairs" class="section level3">
+<h3>R-script: Calculate differences in migration between
+nation-pairs</h3>
+<p>This code generates an excel containing the migration matrix. Of
+note, the column of the matrix represents the “recipient” country while
+the rows are the “sending” country. For example, taking any value ‘x’
+within the matrix, the corresponding country-column is the country that
+recieves ‘x’ number of migrants from the corresponding country-row. If
+‘x’ is a positive number, then it indicates net-flow “to” the
+column-country, while a negative number indicates net-flow “out” of the
+column-country (you can confirm this by noting that every value has a
+corresponding “opposite” value in the matrix position that represents
+the inverse of the country-pair order. E.g. for country A and B, if
+column-A and row-B have a value of ‘x’, then the corresponding column-B
+and row-A matrix position with have a ‘-x’ value).</p>
+<pre class="r"><code>GenerateDiffMatrix &lt;- function(matrix_dir, Raw_matrix, year) {
+  
+  setwd(matrix_dir)
+  
+  
+  # Load Data (i.e. the matrix)
+  df_matrix_xl &lt;- read_xlsx(Raw_matrix)
+  countries &lt;- df_matrix_xl[, 1]           # extract row names
+  df_matrix  &lt;- df_matrix_xl[, -1]         # drop first column (which has country names)
+  df_matrix &lt;- as.matrix(df_matrix)        # Convert tibble to a matrix
+  rownames(df_matrix) &lt;- countries[[1]]    # add back in rownames (i.e. country names) to matrix
+  
+  
+  # The Code ----------------------------------------------------------------
+  
+  
+  # Create the countries matrix; square matrix (i.e. name and order of rows/columns the same)
+  diff_m &lt;- matrix(0, 
+                   nrow = length(countries), #Sending countries
+                   ncol = length(countries), #Receiving countries
+                   dimnames = list(countries, countries)) 
+  
+  diff_m &lt;- df_matrix - t(df_matrix) #calculates a matrix that has the difference in migration between country pairs. 
+  
+  
+  # Save outputs ------------------------------------------------------------
+  
+  write.xlsx(df_matrix, 
+             file=paste0(&quot;DifferenceMatrices_&quot;,year,&quot;.xlsx&quot;), 
+             sheetName=&quot;RawMatrix&quot;, 
+             row.names=TRUE)
+}</code></pre>
+</div>
+<div id="additional-script-that-generates-additional-matrices" class="section level3">
+<h3>Additional script that generates additional matrices</h3>
+<p>The code below generates matrices that reflect only positive values
+(i.e. the net flows), with respective negative values filled in with the
+flag-code “999”.</p>
+<pre class="r"><code># Simplified Matrix: Positive Only (i.e. Net-flow of immigrants)
+  diff_m_simp &lt;- diff_m
+  for (i in 1:nrow(diff_m_simp)) {
+    for (j in 1:ncol(diff_m_simp)) {
+      if (diff_m_simp[i,j] &lt; 0) {
+        diff_m_simp[i,j] &lt;-  999
+      }
+    }
+  }</code></pre>
+<p>The code below takes a different approach in dividing the migrant
+flows by the population of the ‘receiving’ country (i.e. column-country)
+for the given year represented by the matrix. This therefore reflects a
+“density” related metric of immigration.</p>
+<pre class="r"><code># Difference relative to Population size of Receiving country
+  population_df &lt;- read.csv(&quot;Population_1990.csv&quot;) 
+  pop_vec &lt;- population_df[,2] #Convert population column into vector for below calculations
+  
+  # Scale migration flows by receiving-country population
+  scaled_m &lt;- sweep(diff_m,
+                    MARGIN = 2,
+                    STATS = pop_vec,
+                    FUN = &quot;/&quot;)
+  
+  # Scale per 1000 citizens of receiving country (makes values a bit more manageable as it pertains to interpretation)
+  scaled_m_per_1000 &lt;- sweep(scaled_m,
+                             MARGIN = 2,
+                             STATS = 1000,
+                             FUN = &quot;*&quot;) </code></pre>
+<p>Lastly, for the sake of the subsequent analysis with igraph, the code
+below generates a binary matrix in which a value of “1” is given for any
+nation-pair in which the recieving country received &gt;=10,000
+migrants. This will both minimize the complexity of the resutling
+network figures, while also filtering for “major flows” of migrants as
+it pertains to the region at large.</p>
+<pre class="r"><code># Simple Binary for igraph networks ---------------------------------------
+
+  diff_m_binary &lt;- diff_m
+  for (i in 1:nrow(diff_m_binary)) {
+    for (j in 1:ncol(diff_m_binary)) {
+      if (diff_m_binary[i,j] &lt; 9999) {
+        diff_m_binary[i,j] &lt;-  0
+      }
+    }
+  }  </code></pre>
+<p>A follow-up analysis will qualify migrant flows not based on an
+absolute threshold (i.e. the 10,000 migrants as a “floor” for inclusion)
+but instead account for significant migration flows relative to the
+receiving country’s population size. This set-up would provide insight
+into the context of nation-specific experiences in immigration, while
+the above analysis is geared toward the whole of the region context.</p>
+</div>
 </div>
 
 
