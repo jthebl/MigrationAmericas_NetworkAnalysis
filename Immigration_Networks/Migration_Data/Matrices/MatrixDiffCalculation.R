@@ -1,14 +1,7 @@
 
-# Title: Calculate Differences in migration between nation-pairs # --------
+### Calculate Differences in migration between nation-pairs # --------
 
-# General Steps Guide -----------------------------------------------------
 
-# Steps: 
-## 1. **Load the Matrix**
-## 2. **Extract Countries**: Extract the list of countries from the first column and first row of the matrix.
-## 3. **Initialize a New DataFrame**: Create a new DataFrame to store the differences between immigration between country pairs.
-## 4. **Calculate Differences**: Calculate the net number of immigrants moving from each origin country to each destination country; store values in new DataFrame.
-## 5. **Save the Differences Matrix**
 
 
 # Set-up Space ------------------------------------------------------------
