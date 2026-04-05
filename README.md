@@ -30,5 +30,5 @@ orientation phase of this project.
 To understand this project, I have created README files for each subfolder branch point
 that will hopefully help guide one in reviewing this project. To get a sense of the
 Data-gathering and consolidation methods, navigate to the [Migration_Data](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData) subfolder. To view the methods related to constructing the network visualizations and related network analysis metrics, navigate
-to the [Constructing_Networks](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/ConstructingNetworks) subfolder. To view a consolidated
+to the [Constructing_Networks](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/895f254c5c0b5bc08bc49598e974b86c30a11d3e/Immigration_Networks/Constructing_Networks) subfolder. To view a consolidated
 folder of all the R-scripts used in this project, navigate to the [All_Rscripts](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/All_Rscripts) subfolder. 
