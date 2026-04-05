@@ -1,7 +1,7 @@
 ---
 title: "Matrices"
 author: "Joey"
-date: "`r Sys.Date()`"
+date: "2026-04-05"
 output: 
   html_document: 
     keep_md: true
@@ -20,7 +20,7 @@ migration data can be selected according to either Destination, Origin, or Both.
 This excel can be filtered for the countries of interest, both from sending and receiving perspectives.
 Though an obvious point, it is worth mentioning here that on a small enough timescale, migration is, at it's core and as will be constructed in the present analysis, is a two-party phenomena (i.e. it involves a country of origin 
 and country of destination). A more nuanced, qualitative discussion of this and other aspects of this analysis
-can be reviewed in the Further Thoughts and Considerations file. 
+can be reviewed in the Further_Considerations file. 
 
 For the present project, which is focused on migration in the Americas, the following
 criteria was used for selecting countries:
@@ -73,7 +73,8 @@ in the matrix position that represents the inverse of the country-pair order. E.
 A and B, if column-A and row-B have a value of 'x', then the corresponding column-B and row-A matrix
 position with have a '-x' value).
 
-```{r eval=FALSE, include=TRUE}
+
+``` r
 GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year) {
   
   setwd(matrix_dir)
@@ -106,14 +107,14 @@ GenerateDiffMatrix <- function(matrix_dir, Raw_matrix, year) {
              sheetName="RawMatrix", 
              row.names=TRUE)
 }
-
 ```
 
 
 ### Additional script that generates additional matrices 
 The code below generates matrices that reflect only positive values (i.e. the net flows),
 with respective negative values filled in with the flag-code "999". 
-```{r eval=FALSE, include=TRUE}
+
+``` r
 # Simplified Matrix: Positive Only (i.e. Net-flow of immigrants)
   diff_m_simp <- diff_m
   for (i in 1:nrow(diff_m_simp)) {
@@ -123,14 +124,14 @@ with respective negative values filled in with the flag-code "999".
       }
     }
   }
-  
 ```
 
 The code below takes a different approach in dividing the migrant flows by the population
 of the 'receiving' country (i.e. column-country) for the given year represented by the matrix.
 This therefore reflects a "density" related metric of immigration. 
 
-```{r eval=FALSE, include=TRUE}
+
+``` r
 # Difference relative to Population size of Receiving country
   population_df <- read.csv("Population_1990.csv") 
   pop_vec <- population_df[,2] #Convert population column into vector for below calculations
@@ -146,7 +147,6 @@ This therefore reflects a "density" related metric of immigration.
                              MARGIN = 2,
                              STATS = 1000,
                              FUN = "*") 
-  
 ```
 
 
@@ -154,7 +154,8 @@ Lastly, for the sake of the subsequent analysis with igraph, the code below gene
 matrix in which a value of "1" is given for any nation-pair in which the recieving country
 received >=10,000 migrants. This will both minimize the complexity of the resutling network figures, 
 while also filtering for "major flows" of migrants as it pertains to the region at large. 
-```{r eval=FALSE, include=TRUE}
+
+``` r
 # Simple Binary for igraph networks ---------------------------------------
 
   diff_m_binary <- diff_m
@@ -167,7 +168,6 @@ while also filtering for "major flows" of migrants as it pertains to the region 
       }
     }
   }   
-
 ```
 
 
@@ -180,7 +180,8 @@ experiences in immigration, while the above analysis is geared toward the whole 
 # Step 2: Constructing EdgeLists 
 
 When constructing a network using the igraph package, you have the ability to generate the network via an adjacency matrix (which we have essentially done in Step 1) or via an Edgelist, which simply is a dataframe in which each entry (i.e. each row) represents and "edge" within our network (i.e. a connection between two nodes or entities in the network). The code below takes the binary matrix, which has a "1" for every country-pair in which there is a positive migration flow of >= 10,000, and constructs an edgelist given this threshold. It also adds additional attribute columns, specifically data relevant to the absolute number of migrants traveling in the indicated direction (i.e. from Origin to destination country), as well as converting this number to reflect a rate of immigrants per 1000 citizens in the country of origin and destination (separately).
-```{r eval=FALSE, include=TRUE}
+
+``` r
 # Load Space ----
 library(readxl)
 library(tidyverse)
