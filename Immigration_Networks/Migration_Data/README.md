@@ -1,5 +1,5 @@
 ---
-title: "Matrices"
+title: "Constructing Migration Matrices and other Relevant Dataframes"
 author: "Joey"
 date: "2026-04-05"
 output: 
@@ -296,4 +296,4 @@ GenerateEdgeListFx <- function(parent_dir,
 
 # Step 3: Next to the Networks
 Now that we have collected, consolidated, and organized our raw immigration data, we can now begin to build
-out our visual networks, which we will walk through in the [Networks](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/main/Immigration_Networks/ConstructingNetworks) subfolder.
+out our visual networks, which we will walk through in the [Networks](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/f919c960ee85a3505679304c1298a5e62a9bd98d/Immigration_Networks/Constructing_Networks) subfolder.
