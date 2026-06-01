@@ -1,0 +1,10 @@
+---
+title: "README_Constructing_Networks"
+author: "Joey"
+date: "2026-06-01"
+output:   
+  html_document:
+    keep_md: TRUE
+---
+### Moving Off the GitHub Grid
+To best communicate this portion of the project, which involves both narrative, code, and visualization, I decided that using Rpubs was the best option, given that this is a better platform for showing visualizations (github lacks the ability). Therefore, to follow on with the project, specifically in the creation of the various network visualizations, go to the link here [Creating Networks in my personal Rpub page](https://rpubs.com/jtheblj/1437425).
