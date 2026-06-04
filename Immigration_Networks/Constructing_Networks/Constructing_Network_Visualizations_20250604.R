@@ -11,6 +11,7 @@ library(readxl)
 library(tidyverse)
 library(openxlsx)
 library(igraph)
+library(tcltk)
 
 # Set Working Directory
 setwd("C:/Users/heblj/OneDrive/Career/Professional_Portfolio/Network_Analysis/MigrationAmericas_NetworkAnalysis/Immigration_Networks")
@@ -116,7 +117,8 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
         "Uruguay"        = "URY",
         "Venezuela"      = "VEN",
         "United.States"  = "USA",
-        "El.Salvador"    = "SLV"
+        "El.Salvador"    = "SLV",
+        "Costa.Rica"     = "CRI"
       )
     
       # Convert country list to a named character vector
@@ -349,8 +351,19 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
       load("Constructing_Networks/g_2010.R")
       load("Constructing_Networks/g_2020.R")
       
-      # Defined the preferred layout to use in subsequent networks
-      layout_preferred <- layout_with_fr(g_1990)
+  # Load layout
+  layout_preferred <- readRDS("layout_preferred.rds")
+      
+      # Extract coordinates
+      # tkid <- tkplot(g_2020, vertex.label = V(g_2020)$code)
+      # 
+      # layout_preferred <- tk_coords(tkid)
+      # rownames(layout_preferred) <- V(g_2020)$code
+      # 
+      # # Save to your working directory
+      # saveRDS(layout_preferred, file = "layout_preferred.rds")
+      
+
       
   ### Graph based on Degree ----
       ### Degree Total ----
