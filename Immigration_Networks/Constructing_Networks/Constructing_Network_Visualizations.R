@@ -20,20 +20,25 @@ setwd("C:/Users/heblj/OneDrive/Career/Professional_Portfolio/Network_Analysis/Mi
 # Load data ---------------------------------------------------------------
 
 
-### Edgelists ---------------------------------------------------------------
+### adjacency Matrices ---------------------------------------------------------------
 
+# Should use adjacency matrices as this will ensure later vertex-order of the countries is the same
 
 ## 1990
-el_1990 <- read.csv("Migration_Data/Edgelists/EdgeList_1990.csv") # load the csv edgelist 
+AM_1990 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_1990.xlsx", 
+                     sheet = "DM_10000_binary")
 
 ## 2000
-el_2000 <- read.csv("Migration_Data/Edgelists/EdgeList_2000.csv") # load the csv edgelist
+AM_2000 <- read.csv("Migration_Data/Matrices/DifferenceMatrices_1990.xlsx", 
+                    sheet = "DM_10000_binary")
 
 ## 2010
-el_2010 <- read.csv("Migration_Data/Edgelists/EdgeList_2010.csv") # load the csv edgelist
+AM_2010 <- read.csv("Migration_Data/Matrices/DifferenceMatrices_1990.xlsx", 
+                    sheet = "DM_10000_binary")
 
 ## 2020
-el_2020 <- read.csv("Migration_Data/Edgelists/EdgeList_2020.csv") # load the csv edgelist
+AM_2020 <- read.csv("Migration_Data/Matrices/DifferenceMatrices_1990.xlsx", 
+                    sheet = "DM_10000_binary")
 
 
 ### Matrices ----------------------------------------------------------------
@@ -45,7 +50,7 @@ el_2020 <- read.csv("Migration_Data/Edgelists/EdgeList_2020.csv") # load the csv
     graph_from_edgelist(directed = T) # creates the network graph object
 
   #Save network
-  save(g_1990, file = "Constructing_Networks/g_1990.R")
+  save(g_1990, file = "Constructing_Networks/igraph Objects/g_1990.R")
   
   # Visualize
   # plot(g_1990)
@@ -57,7 +62,7 @@ el_2020 <- read.csv("Migration_Data/Edgelists/EdgeList_2020.csv") # load the csv
     graph_from_edgelist(directed = T) # creates the network graph object
   
   #Save network
-  save(g_2000, file = "Constructing_Networks/g_2000.R")
+  save(g_2000, file = "Constructing_Networks/igraph Objects/g_2000.R")
   
   # Visualize
   # plot(g_2000)
@@ -69,7 +74,7 @@ el_2020 <- read.csv("Migration_Data/Edgelists/EdgeList_2020.csv") # load the csv
     graph_from_edgelist(directed = T) # creates the network graph object
   
   #Save network
-  save(g_2010, file = "Constructing_Networks/g_2010.R")
+  save(g_2010, file = "Constructing_Networks/igraph Objects/g_2010.R")
   
   # Visualize
   # plot(g_2010)
@@ -81,7 +86,7 @@ el_2020 <- read.csv("Migration_Data/Edgelists/EdgeList_2020.csv") # load the csv
     graph_from_edgelist(directed = T) # creates the network graph object
   
   #Save network
-  save(g_2020, file = "Constructing_Networks/g_2020.R")
+  save(g_2020, file = "Constructing_Networks/igraph Objects/g_2020.R")
   
   # Visualize
   # plot(g_2020)
@@ -89,13 +94,6 @@ el_2020 <- read.csv("Migration_Data/Edgelists/EdgeList_2020.csv") # load the csv
   
 
 # Adding attributes ------------------------------------
-
-
-  # Load the graphs
-  load("Constructing_Networks/g_1990.R")
-  load("Constructing_Networks/g_2000.R")
-  load("Constructing_Networks/g_2010.R")
-  load("Constructing_Networks/g_2020.R")
   
   ### Vertices Attributes ----
     ### Updating Vertex Labels --------------------------------------------------
@@ -217,7 +215,7 @@ el_2020 <- read.csv("Migration_Data/Edgelists/EdgeList_2020.csv") # load the csv
     ### Adding GDP-per-Cap to each Vertex per year ----
         
         # Load the GDP dataframe
-        gdpPerCap <- read.xlsx("IMF_GDPperCap_PPP.xlsx", sheet = "10yr Avgs")
+        gdpPerCap <- read.xlsx("Constructing_Networks/IMF_GDPperCap_PPP.xlsx", sheet = "10yr Avgs")
         
         # 1990
         idx <- match(V(g_1990)$name, gdpPerCap$COUNTRY)
@@ -236,6 +234,28 @@ el_2020 <- read.csv("Migration_Data/Edgelists/EdgeList_2020.csv") # load the csv
         V(g_2020)$GDPperCap <- gdpPerCap$`2020`[idx]
         
         
+        
+    ### Ensure same country order
+        order_ref <- V(g_1990)$code
+        
+        g_2000 <- igraph::permute(g_2000, match(order_ref, V(g_2000)$code))
+        g_2010 <- igraph::permute(g_2010, match(order_ref, V(g_2010)$code))
+        g_2020 <- igraph::permute(g_2020, match(order_ref, V(g_2020)$code))
+    ### Saving Updates to igraph objects ----
+        #1990
+        save(g_1990, file = "Constructing_Networks/igraph Objects/g_1990.R")
+        
+        
+        #2000
+        save(g_2000, file = "Constructing_Networks/igraph Objects/g_2000.R")
+        
+        
+        #2010
+        save(g_2010, file = "Constructing_Networks/igraph Objects/g_2010.R")
+
+        
+        #2020
+        save(g_2020, file = "Constructing_Networks/igraph Objects/g_2020.R")
         
         
         
