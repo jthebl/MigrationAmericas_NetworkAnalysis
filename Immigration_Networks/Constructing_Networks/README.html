@@ -11,9 +11,9 @@
 
 <meta name="author" content="Joey" />
 
-<meta name="date" content="2026-06-01" />
+<meta name="date" content="2026-06-04" />
 
-<title>Step 3: Constructing Networks</title>
+<title>Step 3: Constructing Network Objects</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,9 +350,9 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Step 3: Constructing Networks</h1>
+<h1 class="title toc-ignore">Step 3: Constructing Network Objects</h1>
 <h4 class="author">Joey</h4>
-<h4 class="date">2026-06-01</h4>
+<h4 class="date">2026-06-04</h4>
 
 </div>
 
@@ -360,19 +360,16 @@ display: none;
 <div id="creating-graph-objects" class="section level1">
 <h1>Creating graph objects</h1>
 <p>If you have been following in the project narrative, we have
-successfully aggregated our data, created edgelist dataframes. In order
-to make visualizations using the igraph package, we need to first create
-graph objects.</p>
+successfully aggregated our data and created edgelist dataframes. In
+order to make visualizations using the igraph package, we need to first
+create graph objects.</p>
 <div id="loading-the-edgelists" class="section level2">
 <h2>Loading the edgelists</h2>
-<p>We must first load the edgelists. For those familiar with R, it is
-important that you have, before this point, indicated the working
-directory and are aware of the location of the saved edgelists from Step
-2.</p>
-<pre class="r"><code># Load data ---------------------------------------------------------------
-
-
-# Edgelists ---------------------------------------------------------------
+<p>We must first load the edgelists into our IDE (R Studio). For those
+familiar with R, it is important that you have, before this point,
+indicated the working directory and the specific location of the saved
+edgelists (from Step 2) within this directory.</p>
+<pre class="r"><code># Edgelists ---------------------------------------------------------------
 
 # 1990
  el_1990 &lt;- read.csv(&quot;Edgelists/EdgeList_1990.csv&quot;) # load the csv edgelist
@@ -388,8 +385,8 @@ directory and are aware of the location of the saved edgelists from Step
 </div>
 <div id="creating-the-graph-objects" class="section level2">
 <h2>Creating the graph objects</h2>
-<p>Next, we need to create graph objects in the igraph package by using
-graph_from_edgelist() function</p>
+<p>Next, we need to create graph objects with the igraph package by
+using graph_from_edgelist() function</p>
 <pre class="r"><code>### Matrices ----------------------------------------------------------------
 # Creating Network Objects ------------------------------------------------
 
@@ -420,11 +417,11 @@ graph_from_edgelist() function</p>
 </div>
 <div id="updating-country-codes" class="section level2">
 <h2>Updating Country Codes</h2>
-<p>Given that our data included the full country names, which is will
-make reading our network visualizations extremely challenging, we next
-need to simply country names into the internationally recognized three
-letter codes. Note that we are doing this not by changing the names of
-the vertices in the graph objects, but rather by including an additional
+<p>Given that our data included the full country names, which will make
+reading our network visualizations extremely challenging, we need to
+simply country names into the internationally recognized three letter
+codes. Note that we are doing this not by changing the names of the
+vertices in the graph objects, but rather by including an additional
 vertex attribute called “code”.</p>
 <pre class="r"><code># Updating Vertex Labels --------------------------------------------------
     
@@ -479,7 +476,7 @@ edges can be qualified as “In”, that is edges coming toward the vertex
 (in the case of migration, a net migration toward the country), or
 “Out”, that is edges going away from the vertex (net migration out of
 the country toward the country at the other end of the edge). The code
-below reflects the addition of these attributes to the vertices</p>
+below reflects the addition of these attributes to the vertices.</p>
 <pre class="r"><code># Adding Degree-related Attributes ------------------------------------------------
 
     # Degree Total ------------------------------------------------------------
@@ -523,7 +520,7 @@ below reflects the addition of these attributes to the vertices</p>
 <div id="centrality-measure-betweeness" class="section level3">
 <h3>Centrality Measure: Betweeness</h3>
 <p>The next attribute added to the vertices is betweeness. Betweeness is
-a measure that tells you how often a vertex sits on the shortest paths
+a measure that tells how often a vertex sits on the shortest path(s)
 between other vertices. In other words, it measures how much a vertex
 acts as an essential bridge between other vertices.</p>
 <pre class="r"><code># Adding Centralization Measures ----
@@ -556,6 +553,48 @@ acts as an essential bridge between other vertices.</p>
     directed = T,
     weights = NULL
   )</code></pre>
+</div>
+<div id="gdp-per-capita-hypothesis" class="section level3">
+<h3>GDP-per-Capita Hypothesis</h3>
+<p>To assess (at this point only qualitatively via visualizations) the
+extent to which GDP-per-capita might explain migration patterns, we will
+next add GDP-per-capita as an additional attribute to the vertices. The
+underlying hypothesis is that countries with lower GDP-per-capita scores
+will experience <em>greater migration</em>, that is, greater nubmer of
+outflows or edges that are directed away from the low-GDP-per-capita
+country to others with greater GDP-per-capita scores.</p>
+<p>Given that the periods assessed in this analysis invovle migration at
+10yr increments (i.e. 1990, 2000, 2010, 2020), GDP was calculated by
+taking the average GDP-per-capita over the previous 10years (e.g. for
+1990, GDP-per-capita was calulated by taking the mean of GDP-per-capita
+for each year from 1980 to 1990).</p>
+<pre class="r"><code>### Adding GDP-per-Cap to each Vertex per year ----
+    
+    # Load the GDP dataframe
+    gdpPerCap &lt;- read.xlsx(&quot;IMF_GDPperCap_PPP.xlsx&quot;, sheet = &quot;10yr Avgs&quot;)
+    
+    # 1990
+    idx &lt;- match(V(g_1990)$name, gdpPerCap$COUNTRY)
+    V(g_1990)$GDPperCap &lt;- gdpPerCap$`1990`[idx]
+    
+    # 2000
+    idx &lt;- match(V(g_2000)$name, gdpPerCap$COUNTRY)
+    V(g_2000)$GDPperCap &lt;- gdpPerCap$`2000`[idx]
+    
+    # 2010
+    idx &lt;- match(V(g_2010)$name, gdpPerCap$COUNTRY)
+    V(g_2010)$GDPperCap &lt;- gdpPerCap$`2010`[idx]
+    
+    # 2020
+    idx &lt;- match(V(g_2020)$name, gdpPerCap$COUNTRY)
+    V(g_2020)$GDPperCap &lt;- gdpPerCap$`2020`[idx]</code></pre>
+</div>
+<div id="on-to-visualizations" class="section level3">
+<h3>On to visualizations</h3>
+<p>Now that we have consolidated and updates our igraph objects, we are
+ready to begin making network visualizations. It was decided that this
+would be best demonstrated in and R pub, which can be seen here - <a href="https://rpubs.com/jtheblj/Step4_VisualizingNetworks">Step 4:
+Visualizing Networks</a></p>
 </div>
 </div>
 </div>

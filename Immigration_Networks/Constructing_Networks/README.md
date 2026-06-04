@@ -1,25 +1,22 @@
 ---
-title: "Step 3: Constructing Networks"
+title: "Step 3: Constructing Network Objects"
 author: "Joey"
-date: "2026-06-01"
+date: "2026-06-04"
 output: 
   html_document:
     keep_md: TRUE
 ---
 
 # Creating graph objects
-If you have been following in the project narrative, we have successfully aggregated our data, created edgelist dataframes. In order to make visualizations using the igraph package, we need to first create graph objects.
+If you have been following in the project narrative, we have successfully aggregated our data and created edgelist dataframes. In order to make visualizations using the igraph package, we need to first create graph objects.
 
 
 
 ## Loading the edgelists
-We must first load the edgelists. For those familiar with R, it is important that you have, before this point, indicated the working directory and are aware of the location of the saved edgelists from Step 2. 
+We must first load the edgelists into our IDE (R Studio). For those familiar with R, it is important that you have, before this point, indicated the working directory and the specific location of the saved edgelists (from Step 2) within this directory. 
 
 
 ``` r
-# Load data ---------------------------------------------------------------
-
-
 # Edgelists ---------------------------------------------------------------
 
 # 1990
@@ -37,7 +34,7 @@ We must first load the edgelists. For those familiar with R, it is important tha
 
 
 ## Creating the graph objects
-Next, we need to create graph objects in the igraph package by using graph_from_edgelist() function
+Next, we need to create graph objects with the igraph package by using graph_from_edgelist() function
 
 ``` r
 ### Matrices ----------------------------------------------------------------
@@ -70,7 +67,7 @@ Next, we need to create graph objects in the igraph package by using graph_from_
 ```
 
 ## Updating Country Codes
-Given that our data included the full country names, which is will make reading our network visualizations extremely challenging, we next need to simply country names into the internationally recognized three letter codes. Note that we are doing this not by changing the names of the vertices in the graph objects, but rather by including an additional vertex attribute called "code".
+Given that our data included the full country names, which will make reading our network visualizations extremely challenging, we need to simply country names into the internationally recognized three letter codes. Note that we are doing this not by changing the names of the vertices in the graph objects, but rather by including an additional vertex attribute called "code".
 
 
 ``` r
@@ -120,7 +117,7 @@ Given that our data included the full country names, which is will make reading 
 In the following code chunks we will add additional vertex attributes. These will be related to network analysis metrics that are useful for understanding the dynamics of a network. 
 
 ### Degree
-Degree represents the number of edges that a vertex possesses. These edges can be qualified as "In", that is edges coming toward the vertex (in the case of migration, a net migration toward the country), or "Out", that is edges going away from the vertex (net migration out of the country toward the country at the other end of the edge). The code below reflects the addition of these attributes to the vertices
+Degree represents the number of edges that a vertex possesses. These edges can be qualified as "In", that is edges coming toward the vertex (in the case of migration, a net migration toward the country), or "Out", that is edges going away from the vertex (net migration out of the country toward the country at the other end of the edge). The code below reflects the addition of these attributes to the vertices.
 
 
 ``` r
@@ -166,7 +163,7 @@ Degree represents the number of edges that a vertex possesses. These edges can b
 ```
 
 ### Centrality Measure: Betweeness
-The next attribute added to the vertices is betweeness. Betweeness is a measure that tells you how often a vertex sits on the shortest paths between other vertices. In other words, it measures how much a vertex acts as an essential bridge between other vertices.
+The next attribute added to the vertices is betweeness. Betweeness is a measure that tells how often a vertex sits on the shortest path(s) between other vertices. In other words, it measures how much a vertex acts as an essential bridge between other vertices.
 
 
 ``` r
@@ -202,3 +199,35 @@ The next attribute added to the vertices is betweeness. Betweeness is a measure 
   )
 ```
 
+### GDP-per-Capita Hypothesis
+To assess (at this point only qualitatively via visualizations) the extent to which GDP-per-capita might explain
+migration patterns, we will next add GDP-per-capita as an additional attribute to the vertices. The underlying hypothesis is that countries with lower GDP-per-capita scores will experience _greater migration_, that is, greater nubmer of outflows or edges that are directed away from the low-GDP-per-capita country to others with greater GDP-per-capita scores.
+
+Given that the periods assessed in this analysis invovle migration at 10yr increments (i.e. 1990, 2000, 2010, 2020), GDP was calculated by taking the average GDP-per-capita over the previous 10years (e.g. for 1990, GDP-per-capita was calulated by taking the mean of GDP-per-capita for each year from 1980 to 1990).
+
+
+``` r
+### Adding GDP-per-Cap to each Vertex per year ----
+    
+    # Load the GDP dataframe
+    gdpPerCap <- read.xlsx("IMF_GDPperCap_PPP.xlsx", sheet = "10yr Avgs")
+    
+    # 1990
+    idx <- match(V(g_1990)$name, gdpPerCap$COUNTRY)
+    V(g_1990)$GDPperCap <- gdpPerCap$`1990`[idx]
+    
+    # 2000
+    idx <- match(V(g_2000)$name, gdpPerCap$COUNTRY)
+    V(g_2000)$GDPperCap <- gdpPerCap$`2000`[idx]
+    
+    # 2010
+    idx <- match(V(g_2010)$name, gdpPerCap$COUNTRY)
+    V(g_2010)$GDPperCap <- gdpPerCap$`2010`[idx]
+    
+    # 2020
+    idx <- match(V(g_2020)$name, gdpPerCap$COUNTRY)
+    V(g_2020)$GDPperCap <- gdpPerCap$`2020`[idx]
+```
+
+### On to visualizations
+Now that we have consolidated and updates our igraph objects, we are ready to begin making network visualizations. It was decided that this would be best demonstrated in and R pub, which can be seen here - [Step 4: Visualizing Networks](https://rpubs.com/jtheblj/Step4_VisualizingNetworks)
