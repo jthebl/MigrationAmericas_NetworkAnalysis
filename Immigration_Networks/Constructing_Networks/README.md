@@ -8,62 +8,66 @@ output:
 ---
 
 # Creating graph objects
-If you have been following in the project narrative, we have successfully aggregated our data and created edgelist dataframes. In order to make visualizations using the igraph package, we need to first create graph objects.
+If you have been following in the project narrative - [Sourcing Raw Migration Data](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#getting-started-sourcing-the-raw-migration-data), [Step 1: Constructing the Matrix](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#step-1-constructing-the-matrix), and [Step 2: Constructing Edgelists](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#step-2-constructing-edgelists) - we have successfully aggregated our data and created edgelist dataframes. In order to make visualizations using the igraph package, we need to first create network objects.
 
 
 
-## Loading the edgelists
-We must first load the edgelists into our IDE (R Studio). For those familiar with R, it is important that you have, before this point, indicated the working directory and the specific location of the saved edgelists (from Step 2) within this directory. 
 
-
-``` r
-# Edgelists ---------------------------------------------------------------
-
-# 1990
- el_1990 <- read.csv("Edgelists/EdgeList_1990.csv") # load the csv edgelist
-
-# 2000
- el_2000 <- read.csv("Edgelists/EdgeList_2000.csv") # load the csv edgelist
-
-# 2010
- el_2010 <- read.csv("Edgelists/EdgeList_2010.csv") # load the csv edgelist
-
-# 2020
- el_2020 <- read.csv("Edgelists/EdgeList_2020.csv") # load the csv edgelist
-```
-
-
-## Creating the graph objects
-Next, we need to create graph objects with the igraph package by using graph_from_edgelist() function
+## Creating the network objects
+Next, we need to create network objects with the igraph package so that we can not only create our visualization from the migration data we have thus far aggregated, but also so we can add additional nuances and information to the visualizations themselves. We will first create the network objects by using graph_from_adjacency_matrix() function. We need to load the proper adjacency matrices that we created in [Step 1: Constructing the Matrix.](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/db793aef067e82282f2215df82572fa7029ec04c/Immigration_Networks/Migration_Data#step-1-constructing-the-matrix) We will then create network objects from these adjacency matrices by using the graph_from_adjacency_matrix() function.
 
 ``` r
 ### Matrices ----------------------------------------------------------------
-# Creating Network Objects ------------------------------------------------
+  # Of note, you do need to know the relevant path or file directory for the files you plan to load, in this case the adjacency matrices.
+
+  ## 1990
+  AM_1990 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_1990.xlsx", 
+                       sheet = "DM_10000_binary",
+                       rowNames = TRUE)
+  
+  ## 2000
+  AM_2000 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2000.xlsx", 
+                      sheet = "DM_10000_binary",
+                      rowNames = TRUE)
+  
+  ## 2010
+  AM_2010 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2010.xlsx", 
+                      sheet = "DM_10000_binary",
+                      rowNames = TRUE)
+  
+  ## 2020
+  AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx", 
+                      sheet = "DM_10000_binary",
+                      rowNames = TRUE)
+  
+  # Creating Network Objects ------------------------------------------------
 
   #1990
-  g_1990 <- select(el_1990, Origin, Destination) %>% # select only the first two columns for graphing purposes
-    as.matrix() %>% # need to convert dataframe to a matrix
-    graph_from_edgelist(directed = T) # creates the network graph object
-
+    m_1990 <- as.matrix(AM_1990) # Create Matrix object first
+    g_1990 <- graph_from_adjacency_matrix(m_1990,
+                                          mode = "directed",
+                                          weighted = NULL)
   
   
   #2000
-  g_2000 <- select(el_2000, Origin, Destination) %>% # select only the first two columns for graphing purposes
-    as.matrix() %>% # need to convert dataframe to a matrix
-    graph_from_edgelist(directed = T) # creates the network graph object
-  
-  
+    m_2000 <- as.matrix(AM_2000) # Create Matrix object first
+    g_2000 <- graph_from_adjacency_matrix(m_2000,
+                                          mode = "directed",
+                                          weighted = NULL)
+
   
   #2010
-  g_2010 <- select(el_2010, Origin, Destination) %>% # select only the first two columns for graphing purposes
-    as.matrix() %>% # need to convert dataframe to a matrix
-    graph_from_edgelist(directed = T) # creates the network graph object
-  
+    m_2010 <- as.matrix(AM_2010) # Create Matrix object first
+    g_2010 <- graph_from_adjacency_matrix(m_2010,
+                                          mode = "directed",
+                                          weighted = NULL)
+    
   
   #2020
-  g_2020 <- select(el_2020, Origin, Destination) %>% # select only the first two columns for graphing purposes
-    as.matrix() %>% # need to convert dataframe to a matrix
-    graph_from_edgelist(directed = T) # creates the network graph object
+    m_2020 <- as.matrix(AM_2020) # Create Matrix object first
+    g_2020 <- graph_from_adjacency_matrix(m_2020,
+                                          mode = "directed",
+                                          weighted = NULL)
 ```
 
 ## Updating Country Codes
@@ -93,7 +97,12 @@ Given that our data included the full country names, which will make reading our
     "Peru"           = "PER",
     "United States"  = "USA",
     "Uruguay"        = "URY",
-    "Venezuela"      = "VEN"
+    "Venezuela"      = "VEN",
+    
+    # Some additional naming variants in our data
+    "United.States"  = "USA",
+    "El.Salvador"    = "SLV",
+    "Costa.Rica"     = "CRI"
   )
 
   # Convert country list to a named character vector
@@ -112,6 +121,7 @@ Given that our data included the full country names, which will make reading our
   #2020
     V(g_2020)$code <- codes[V(g_2020)$name]
 ```
+
 
 ## Adding Additional Vertex Attributes
 In the following code chunks we will add additional vertex attributes. These will be related to network analysis metrics that are useful for understanding the dynamics of a network. 
@@ -210,7 +220,7 @@ Given that the periods assessed in this analysis invovle migration at 10yr incre
 ### Adding GDP-per-Cap to each Vertex per year ----
     
     # Load the GDP dataframe
-    gdpPerCap <- read.xlsx("IMF_GDPperCap_PPP.xlsx", sheet = "10yr Avgs")
+    gdpPerCap <- read.xlsx("Constructing_Networks/IMF_GDPperCap_PPP.xlsx", sheet = "10yr Avgs")
     
     # 1990
     idx <- match(V(g_1990)$name, gdpPerCap$COUNTRY)
@@ -227,6 +237,46 @@ Given that the periods assessed in this analysis invovle migration at 10yr incre
     # 2020
     idx <- match(V(g_2020)$name, gdpPerCap$COUNTRY)
     V(g_2020)$GDPperCap <- gdpPerCap$`2020`[idx]
+```
+
+### Adding attributes to the Edges - Need to start with edglists
+If we want to add attributes to the edges in our network visualizations, such as the number of migrants an edge represents (either in absolute or relative terms), we need to load the edgelists we created in [Step 2: Constructing Edgelists](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#step-2-constructing-edgelists) and then add the relevant information these dataframes contain (specifically number of migrants each edge represents) to our network objects. 
+
+
+``` r
+# Edgelists ---------------------------------------------------------------
+
+  # 1990
+   el_1990 <- read.csv("Constructing_Networks/Edgelists/EdgeList_1990.csv") # load the csv edgelist
+  
+  # 2000
+   el_2000 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2000.csv") # load the csv edgelist
+  
+  # 2010
+   el_2010 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2010.csv") # load the csv edgelist
+  
+  # 2020
+   el_2020 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2020.csv") # load the csv edgelist
+ 
+  
+   
+   ### migration flow "weight(s)" ----
+    
+    E(g_1990)$MigrationFlowWeight <- el_1990$Immigration_absolute
+    E(g_1990)$MigrationFlowWeight_PropOrg <- el_1990$per1000_org
+    E(g_1990)$MigrationFlowWeight_PropDest <- el_1990$per1000_dest
+    
+    E(g_2000)$MigrationFlowWeight <- el_2000$Immigration_absolute
+    E(g_2000)$MigrationFlowWeight_PropOrg <- el_2000$per1000_org
+    E(g_2000)$MigrationFlowWeight_PropDest <- el_2000$per1000_dest
+    
+    E(g_2010)$MigrationFlowWeight <- el_2010$Immigration_absolute
+    E(g_2010)$MigrationFlowWeight_PropOrg <- el_2010$per1000_org
+    E(g_2010)$MigrationFlowWeight_PropDest <- el_2010$per1000_dest
+    
+    E(g_2020)$MigrationFlowWeight <- el_2020$Immigration_absolute
+    E(g_2020)$MigrationFlowWeight_PropOrg <- el_2020$per1000_org
+    E(g_2020)$MigrationFlowWeight_PropDest <- el_2020$per1000_dest
 ```
 
 ### On to Visualizations

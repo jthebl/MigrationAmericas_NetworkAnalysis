@@ -359,61 +359,74 @@ display: none;
 
 <div id="creating-graph-objects" class="section level1">
 <h1>Creating graph objects</h1>
-<p>If you have been following in the project narrative, we have
-successfully aggregated our data and created edgelist dataframes. In
-order to make visualizations using the igraph package, we need to first
-create graph objects.</p>
-<div id="loading-the-edgelists" class="section level2">
-<h2>Loading the edgelists</h2>
-<p>We must first load the edgelists into our IDE (R Studio). For those
-familiar with R, it is important that you have, before this point,
-indicated the working directory and the specific location of the saved
-edgelists (from Step 2) within this directory.</p>
-<pre class="r"><code># Edgelists ---------------------------------------------------------------
-
-# 1990
- el_1990 &lt;- read.csv(&quot;Edgelists/EdgeList_1990.csv&quot;) # load the csv edgelist
-
-# 2000
- el_2000 &lt;- read.csv(&quot;Edgelists/EdgeList_2000.csv&quot;) # load the csv edgelist
-
-# 2010
- el_2010 &lt;- read.csv(&quot;Edgelists/EdgeList_2010.csv&quot;) # load the csv edgelist
-
-# 2020
- el_2020 &lt;- read.csv(&quot;Edgelists/EdgeList_2020.csv&quot;) # load the csv edgelist</code></pre>
-</div>
-<div id="creating-the-graph-objects" class="section level2">
-<h2>Creating the graph objects</h2>
-<p>Next, we need to create graph objects with the igraph package by
-using graph_from_edgelist() function</p>
+<p>If you have been following in the project narrative - <a href="https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#getting-started-sourcing-the-raw-migration-data">Sourcing
+Raw Migration Data</a>, <a href="https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#step-1-constructing-the-matrix">Step
+1: Constructing the Matrix</a>, and <a href="https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#step-2-constructing-edgelists">Step
+2: Constructing Edgelists</a> - we have successfully aggregated our data
+and created edgelist dataframes. In order to make visualizations using
+the igraph package, we need to first create network objects.</p>
+<div id="creating-the-network-objects" class="section level2">
+<h2>Creating the network objects</h2>
+<p>Next, we need to create network objects with the igraph package so
+that we can not only create our visualization from the migration data we
+have thus far aggregated, but also so we can add additional nuances and
+information to the visualizations themselves. We will first create the
+network objects by using graph_from_adjacency_matrix() function. We need
+to load the proper adjacency matrices that we created in <a href="https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/db793aef067e82282f2215df82572fa7029ec04c/Immigration_Networks/Migration_Data#step-1-constructing-the-matrix">Step
+1: Constructing the Matrix.</a> We will then create network objects from
+these adjacency matrices by using the graph_from_adjacency_matrix()
+function.</p>
 <pre class="r"><code>### Matrices ----------------------------------------------------------------
-# Creating Network Objects ------------------------------------------------
+  # Of note, you do need to know the relevant path or file directory for the files you plan to load, in this case the adjacency matrices.
+
+  ## 1990
+  AM_1990 &lt;- read.xlsx(&quot;Migration_Data/Matrices/DifferenceMatrices_1990.xlsx&quot;, 
+                       sheet = &quot;DM_10000_binary&quot;,
+                       rowNames = TRUE)
+  
+  ## 2000
+  AM_2000 &lt;- read.xlsx(&quot;Migration_Data/Matrices/DifferenceMatrices_2000.xlsx&quot;, 
+                      sheet = &quot;DM_10000_binary&quot;,
+                      rowNames = TRUE)
+  
+  ## 2010
+  AM_2010 &lt;- read.xlsx(&quot;Migration_Data/Matrices/DifferenceMatrices_2010.xlsx&quot;, 
+                      sheet = &quot;DM_10000_binary&quot;,
+                      rowNames = TRUE)
+  
+  ## 2020
+  AM_2020 &lt;- read.xlsx(&quot;Migration_Data/Matrices/DifferenceMatrices_2020.xlsx&quot;, 
+                      sheet = &quot;DM_10000_binary&quot;,
+                      rowNames = TRUE)
+  
+  # Creating Network Objects ------------------------------------------------
 
   #1990
-  g_1990 &lt;- select(el_1990, Origin, Destination) %&gt;% # select only the first two columns for graphing purposes
-    as.matrix() %&gt;% # need to convert dataframe to a matrix
-    graph_from_edgelist(directed = T) # creates the network graph object
-
+    m_1990 &lt;- as.matrix(AM_1990) # Create Matrix object first
+    g_1990 &lt;- graph_from_adjacency_matrix(m_1990,
+                                          mode = &quot;directed&quot;,
+                                          weighted = NULL)
   
   
   #2000
-  g_2000 &lt;- select(el_2000, Origin, Destination) %&gt;% # select only the first two columns for graphing purposes
-    as.matrix() %&gt;% # need to convert dataframe to a matrix
-    graph_from_edgelist(directed = T) # creates the network graph object
-  
-  
+    m_2000 &lt;- as.matrix(AM_2000) # Create Matrix object first
+    g_2000 &lt;- graph_from_adjacency_matrix(m_2000,
+                                          mode = &quot;directed&quot;,
+                                          weighted = NULL)
+
   
   #2010
-  g_2010 &lt;- select(el_2010, Origin, Destination) %&gt;% # select only the first two columns for graphing purposes
-    as.matrix() %&gt;% # need to convert dataframe to a matrix
-    graph_from_edgelist(directed = T) # creates the network graph object
-  
+    m_2010 &lt;- as.matrix(AM_2010) # Create Matrix object first
+    g_2010 &lt;- graph_from_adjacency_matrix(m_2010,
+                                          mode = &quot;directed&quot;,
+                                          weighted = NULL)
+    
   
   #2020
-  g_2020 &lt;- select(el_2020, Origin, Destination) %&gt;% # select only the first two columns for graphing purposes
-    as.matrix() %&gt;% # need to convert dataframe to a matrix
-    graph_from_edgelist(directed = T) # creates the network graph object</code></pre>
+    m_2020 &lt;- as.matrix(AM_2020) # Create Matrix object first
+    g_2020 &lt;- graph_from_adjacency_matrix(m_2020,
+                                          mode = &quot;directed&quot;,
+                                          weighted = NULL)</code></pre>
 </div>
 <div id="updating-country-codes" class="section level2">
 <h2>Updating Country Codes</h2>
@@ -445,7 +458,12 @@ vertex attribute called “code”.</p>
     &quot;Peru&quot;           = &quot;PER&quot;,
     &quot;United States&quot;  = &quot;USA&quot;,
     &quot;Uruguay&quot;        = &quot;URY&quot;,
-    &quot;Venezuela&quot;      = &quot;VEN&quot;
+    &quot;Venezuela&quot;      = &quot;VEN&quot;,
+    
+    # Some additional naming variants in our data
+    &quot;United.States&quot;  = &quot;USA&quot;,
+    &quot;El.Salvador&quot;    = &quot;SLV&quot;,
+    &quot;Costa.Rica&quot;     = &quot;CRI&quot;
   )
 
   # Convert country list to a named character vector
@@ -571,7 +589,7 @@ for each year from 1980 to 1990).</p>
 <pre class="r"><code>### Adding GDP-per-Cap to each Vertex per year ----
     
     # Load the GDP dataframe
-    gdpPerCap &lt;- read.xlsx(&quot;IMF_GDPperCap_PPP.xlsx&quot;, sheet = &quot;10yr Avgs&quot;)
+    gdpPerCap &lt;- read.xlsx(&quot;Constructing_Networks/IMF_GDPperCap_PPP.xlsx&quot;, sheet = &quot;10yr Avgs&quot;)
     
     # 1990
     idx &lt;- match(V(g_1990)$name, gdpPerCap$COUNTRY)
@@ -588,6 +606,49 @@ for each year from 1980 to 1990).</p>
     # 2020
     idx &lt;- match(V(g_2020)$name, gdpPerCap$COUNTRY)
     V(g_2020)$GDPperCap &lt;- gdpPerCap$`2020`[idx]</code></pre>
+</div>
+<div id="adding-attributes-to-the-edges---need-to-start-with-edglists" class="section level3">
+<h3>Adding attributes to the Edges - Need to start with edglists</h3>
+<p>If we want to add attributes to the edges in our network
+visualizations, such as the number of migrants an edge represents
+(either in absolute or relative terms), we need to load the edgelists we
+created in <a href="https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#step-2-constructing-edgelists">Step
+2: Constructing Edgelists</a> and then add the relevant information
+these dataframes contain (specifically number of migrants each edge
+represents) to our network objects.</p>
+<pre class="r"><code># Edgelists ---------------------------------------------------------------
+
+  # 1990
+   el_1990 &lt;- read.csv(&quot;Constructing_Networks/Edgelists/EdgeList_1990.csv&quot;) # load the csv edgelist
+  
+  # 2000
+   el_2000 &lt;- read.csv(&quot;Constructing_Networks/Edgelists/EdgeList_2000.csv&quot;) # load the csv edgelist
+  
+  # 2010
+   el_2010 &lt;- read.csv(&quot;Constructing_Networks/Edgelists/EdgeList_2010.csv&quot;) # load the csv edgelist
+  
+  # 2020
+   el_2020 &lt;- read.csv(&quot;Constructing_Networks/Edgelists/EdgeList_2020.csv&quot;) # load the csv edgelist
+ 
+  
+   
+   ### migration flow &quot;weight(s)&quot; ----
+    
+    E(g_1990)$MigrationFlowWeight &lt;- el_1990$Immigration_absolute
+    E(g_1990)$MigrationFlowWeight_PropOrg &lt;- el_1990$per1000_org
+    E(g_1990)$MigrationFlowWeight_PropDest &lt;- el_1990$per1000_dest
+    
+    E(g_2000)$MigrationFlowWeight &lt;- el_2000$Immigration_absolute
+    E(g_2000)$MigrationFlowWeight_PropOrg &lt;- el_2000$per1000_org
+    E(g_2000)$MigrationFlowWeight_PropDest &lt;- el_2000$per1000_dest
+    
+    E(g_2010)$MigrationFlowWeight &lt;- el_2010$Immigration_absolute
+    E(g_2010)$MigrationFlowWeight_PropOrg &lt;- el_2010$per1000_org
+    E(g_2010)$MigrationFlowWeight_PropDest &lt;- el_2010$per1000_dest
+    
+    E(g_2020)$MigrationFlowWeight &lt;- el_2020$Immigration_absolute
+    E(g_2020)$MigrationFlowWeight_PropOrg &lt;- el_2020$per1000_org
+    E(g_2020)$MigrationFlowWeight_PropDest &lt;- el_2020$per1000_dest</code></pre>
 </div>
 <div id="on-to-visualizations" class="section level3">
 <h3>On to Visualizations</h3>
