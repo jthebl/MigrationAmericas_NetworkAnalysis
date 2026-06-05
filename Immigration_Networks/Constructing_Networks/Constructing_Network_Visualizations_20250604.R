@@ -362,10 +362,10 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
 
   ### Saving Graphs ----
       
-      save(g_1990, file = "Constructing_Networks/g_1990.R")
-      save(g_2000, file = "Constructing_Networks/g_2000.R")
-      save(g_2010, file = "Constructing_Networks/g_2010.R")
-      save(g_2020, file = "Constructing_Networks/g_2020.R")
+      save(g_1990, file = "Constructing_Networks/igraph Objects/g_1990.R")
+      save(g_2000, file = "Constructing_Networks/igraph Objects/g_2000.R")
+      save(g_2010, file = "Constructing_Networks/igraph Objects/g_2010.R")
+      save(g_2020, file = "Constructing_Networks/igraph Objects/g_2020.R")
       
 # Creating Visualizations ----
       
