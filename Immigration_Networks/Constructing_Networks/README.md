@@ -85,9 +85,7 @@ Given that our data included the full country names, which will make reading our
     "Canada"         = "CAN",
     "Chile"          = "CHL",
     "Colombia"       = "COL",
-    "Costa Rica"     = "CRI",
     "Ecuador"        = "ECU",
-    "El Salvador"    = "SLV",
     "Guatemala"      = "GTM",
     "Honduras"       = "HND",
     "Mexico"         = "MEX",
@@ -95,11 +93,8 @@ Given that our data included the full country names, which will make reading our
     "Panama"         = "PAN",
     "Paraguay"       = "PRY",
     "Peru"           = "PER",
-    "United States"  = "USA",
     "Uruguay"        = "URY",
     "Venezuela"      = "VEN",
-    
-    # Some additional naming variants in our data
     "United.States"  = "USA",
     "El.Salvador"    = "SLV",
     "Costa.Rica"     = "CRI"
@@ -239,45 +234,63 @@ Given that the periods assessed in this analysis invovle migration at 10yr incre
     V(g_2020)$GDPperCap <- gdpPerCap$`2020`[idx]
 ```
 
-### Adding attributes to the Edges - Need to start with edglists
-If we want to add attributes to the edges in our network visualizations, such as the number of migrants an edge represents (either in absolute or relative terms), we need to load the edgelists we created in [Step 2: Constructing Edgelists](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#step-2-constructing-edgelists) and then add the relevant information these dataframes contain (specifically number of migrants each edge represents) to our network objects. 
+## Adding attributes to the Edges
+
+### Load Edgelists...And annoying data reconciliation
+If we want to add attributes to the edges in our network visualizations, such as the number of migrants an edge represents (either in absolute or relative terms), we need to load the edgelists we created in [Step 2: Constructing Edgelists](https://github.com/jthebl/MigrationAmericas_NetworkAnalysis/tree/50146dfec499754fff72d8809971d308dfe1675b/Immigration_Networks/MigrationData#step-2-constructing-edgelists). But before we can add the edge information directly to our network objects, we have to ensure that it is ordered correctly such that the information goes to the correct edge (e.g. the number of migrants between Costa Rica and Chile is correctly assigned to the edge between Costa Rica and Chile).
 
 
 ``` r
 # Edgelists ---------------------------------------------------------------
+        
+    # 1990
+    el_1990 <- read.csv("Constructing_Networks/Edgelists/EdgeList_1990.csv") # load the csv edgelist
+    
+    # 2000
+    el_2000 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2000.csv") # load the csv edgelist
+    
+    # 2010
+    el_2010 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2010.csv") # load the csv edgelist
+    
+    # 2020
+    el_2020 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2020.csv") # load the csv edgelist
+      
+        
+    ### Reconcile the Edge data with the Network Objects----
+        #simplest to make function so as to iterate over all networks
 
-  # 1990
-   el_1990 <- read.csv("Constructing_Networks/Edgelists/EdgeList_1990.csv") # load the csv edgelist
-  
-  # 2000
-   el_2000 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2000.csv") # load the csv edgelist
-  
-  # 2010
-   el_2010 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2010.csv") # load the csv edgelist
-  
-  # 2020
-   el_2020 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2020.csv") # load the csv edgelist
- 
-  
-   
-   ### migration flow "weight(s)" ----
-    
-    E(g_1990)$MigrationFlowWeight <- el_1990$Immigration_absolute
-    E(g_1990)$MigrationFlowWeight_PropOrg <- el_1990$per1000_org
-    E(g_1990)$MigrationFlowWeight_PropDest <- el_1990$per1000_dest
-    
-    E(g_2000)$MigrationFlowWeight <- el_2000$Immigration_absolute
-    E(g_2000)$MigrationFlowWeight_PropOrg <- el_2000$per1000_org
-    E(g_2000)$MigrationFlowWeight_PropDest <- el_2000$per1000_dest
-    
-    E(g_2010)$MigrationFlowWeight <- el_2010$Immigration_absolute
-    E(g_2010)$MigrationFlowWeight_PropOrg <- el_2010$per1000_org
-    E(g_2010)$MigrationFlowWeight_PropDest <- el_2010$per1000_dest
-    
-    E(g_2020)$MigrationFlowWeight <- el_2020$Immigration_absolute
-    E(g_2020)$MigrationFlowWeight_PropOrg <- el_2020$per1000_org
-    E(g_2020)$MigrationFlowWeight_PropDest <- el_2020$per1000_dest
+        Reconcile_Edge_Data_fx <- function(network, EdgeList, network_name) {
+          
+          # 1. Get the edge list from the existing graph
+          graph_edges <- as_data_frame(network, what = "edges")
+          
+          # 2. Create match keys
+          graph_edges$key <- paste(graph_edges$from, graph_edges$to, sep = "_")
+          EdgeList$key    <- paste(EdgeList$Origin, EdgeList$Destination, sep = "_")
+          
+          # 3. Match and reorder attribute data to align with graph edge order
+          matched <- EdgeList[match(graph_edges$key, EdgeList$key), ]
+          
+          # 4. Assign attributes
+          E(network)$MigrationFlowWeight          <- matched$Immigration_absolute
+          E(network)$MigrationFlowWeight_PropOrg  <- matched$per1000_org
+          E(network)$MigrationFlowWeight_PropDest <- matched$per1000_dest
+          
+          # 5. Save — use network_name (a string) for the filename ✅
+          save(network, file = paste0("Constructing_Networks/igraph Objects/", network_name, ".RData"))
+          
+          # 6. Return the modified network
+          return(network)
+        }
+        
+        
+        # Now iterate over networks
+        g_1990 <- Reconcile_Edge_Data_fx(g_1990, el_1990, "g_1990")
+        g_2000 <- Reconcile_Edge_Data_fx(g_2000, el_2000, "g_2000")
+        g_2010 <- Reconcile_Edge_Data_fx(g_2010, el_2010, "g_2010")
+        g_2020 <- Reconcile_Edge_Data_fx(g_2020, el_2020, "g_2020")
 ```
+
 
 ### On to Visualizations
 Now that we have consolidated and updates our igraph objects, we are ready to begin making network visualizations. It was decided that this would be best demonstrated in and R pub, which can be seen here - [Step 4: Visualizing Networks](https://rpubs.com/jtheblj/Step4_VisualizingNetworks)

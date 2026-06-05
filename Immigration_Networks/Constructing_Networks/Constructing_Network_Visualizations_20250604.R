@@ -56,7 +56,7 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
                                           weighted = NULL)
   
     #Save network
-    save(g_1990, file = "Constructing_Networks/igraph Objects/g_1990.R")
+    save(g_1990, file = "Constructing_Networks/igraph Objects/g_1990.rds")
 
   
   
@@ -67,7 +67,7 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
                                           weighted = NULL)
     
     #Save network
-    save(g_2000, file = "Constructing_Networks/igraph Objects/g_2000.R")
+    save(g_2000, file = "Constructing_Networks/igraph Objects/g_2000.rds")
   
   
   #2010
@@ -77,7 +77,7 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
                                           weighted = NULL)
     
     #Save network
-    save(g_2010, file = "Constructing_Networks/igraph Objects/g_2010.R")
+    save(g_2010, file = "Constructing_Networks/igraph Objects/g_2010.rds")
   
   
   #2020
@@ -87,7 +87,7 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
                                           weighted = NULL)
     
     #Save network
-    save(g_2020, file = "Constructing_Networks/igraph Objects/g_2020.R")
+    save(g_2020, file = "Constructing_Networks/igraph Objects/g_2020.rds")
   
 
 # Adding attributes ------------------------------------
@@ -237,19 +237,19 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
         
     ### Saving Updates to igraph objects ----
         #1990
-        save(g_1990, file = "Constructing_Networks/igraph Objects/g_1990.R")
+        save(g_1990, file = "Constructing_Networks/igraph Objects/g_1990.rds")
         
         
         #2000
-        save(g_2000, file = "Constructing_Networks/igraph Objects/g_2000.R")
+        save(g_2000, file = "Constructing_Networks/igraph Objects/g_2000.rds")
         
         
         #2010
-        save(g_2010, file = "Constructing_Networks/igraph Objects/g_2010.R")
+        save(g_2010, file = "Constructing_Networks/igraph Objects/g_2010.rds")
 
         
         #2020
-        save(g_2020, file = "Constructing_Networks/igraph Objects/g_2020.R")
+        save(g_2020, file = "Constructing_Networks/igraph Objects/g_2020.rds")
         
         
         
@@ -342,38 +342,49 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
         # 2020
         el_2020 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2020.csv") # load the csv edgelist
         
-    ### migration flow "weight(s)" ----
         
-        E(g_1990)$MigrationFlowWeight <- el_1990$Immigration_absolute
-        E(g_1990)$MigrationFlowWeight_PropOrg <- el_1990$per1000_org
-        E(g_1990)$MigrationFlowWeight_PropDest <- el_1990$per1000_dest
-        
-        E(g_2000)$MigrationFlowWeight <- el_2000$Immigration_absolute
-        E(g_2000)$MigrationFlowWeight_PropOrg <- el_2000$per1000_org
-        E(g_2000)$MigrationFlowWeight_PropDest <- el_2000$per1000_dest
-        
-        E(g_2010)$MigrationFlowWeight <- el_2010$Immigration_absolute
-        E(g_2010)$MigrationFlowWeight_PropOrg <- el_2010$per1000_org
-        E(g_2010)$MigrationFlowWeight_PropDest <- el_2010$per1000_dest
-        
-        E(g_2020)$MigrationFlowWeight <- el_2020$Immigration_absolute
-        E(g_2020)$MigrationFlowWeight_PropOrg <- el_2020$per1000_org
-        E(g_2020)$MigrationFlowWeight_PropDest <- el_2020$per1000_dest
+    ### Reconcile the Edge data with the Network Objects----
+        #simplest to make function so as to iterate over all networks
 
-  ### Saving Graphs ----
-      
-      save(g_1990, file = "Constructing_Networks/igraph Objects/g_1990.R")
-      save(g_2000, file = "Constructing_Networks/igraph Objects/g_2000.R")
-      save(g_2010, file = "Constructing_Networks/igraph Objects/g_2010.R")
-      save(g_2020, file = "Constructing_Networks/igraph Objects/g_2020.R")
+        Reconcile_Edge_Data_fx <- function(network, EdgeList, network_name) {
+          
+          # 1. Get the edge list from the existing graph
+          graph_edges <- as_data_frame(network, what = "edges")
+          
+          # 2. Create match keys
+          graph_edges$key <- paste(graph_edges$from, graph_edges$to, sep = "_")
+          EdgeList$key    <- paste(EdgeList$Origin, EdgeList$Destination, sep = "_")
+          
+          # 3. Match and reorder attribute data to align with graph edge order
+          matched <- EdgeList[match(graph_edges$key, EdgeList$key), ]
+          
+          # 4. Assign attributes
+          E(network)$MigrationFlowWeight          <- matched$Immigration_absolute
+          E(network)$MigrationFlowWeight_PropOrg  <- matched$per1000_org
+          E(network)$MigrationFlowWeight_PropDest <- matched$per1000_dest
+          
+          # 5. Save — use network_name (a string) for the filename
+          saveRDS(network, file = paste0("Constructing_Networks/igraph Objects/", network_name, ".rds"))
+          
+          # 6. Return the modified network
+          return(network)
+        }
+        
+        
+        # Now iterate over networks
+        g_1990 <- Reconcile_Edge_Data_fx(g_1990, el_1990, "g_1990")
+        g_2000 <- Reconcile_Edge_Data_fx(g_2000, el_2000, "g_2000")
+        g_2010 <- Reconcile_Edge_Data_fx(g_2010, el_2010, "g_2010")
+        g_2020 <- Reconcile_Edge_Data_fx(g_2020, el_2020, "g_2020")
+
       
 # Creating Visualizations ----
       
   ### Load the graphs ----
-      load("Constructing_Networks/g_1990.R")
-      load("Constructing_Networks/g_2000.R")
-      load("Constructing_Networks/g_2010.R")
-      load("Constructing_Networks/g_2020.R")
+      load("Constructing_Networks/igraph Objects/g_1990.rds")
+      load("Constructing_Networks/igraph Objects/g_2000.rds")
+      load("Constructing_Networks/igraph Objects/g_2010.rds")
+      load("Constructing_Networks/igraph Objects/g_2020.rds")
       
   # Load layout
   layout_preferred <- readRDS("layout_preferred.rds")
