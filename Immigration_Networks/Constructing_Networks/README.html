@@ -11,7 +11,7 @@
 
 <meta name="author" content="Joey" />
 
-<meta name="date" content="2026-06-04" />
+<meta name="date" content="2026-06-05" />
 
 <title>Step 3: Constructing Network Objects</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">Step 3: Constructing Network Objects</h1>
 <h4 class="author">Joey</h4>
-<h4 class="date">2026-06-04</h4>
+<h4 class="date">2026-06-05</h4>
 
 </div>
 
@@ -589,21 +589,8 @@ for each year from 1980 to 1990).</p>
     idx &lt;- match(V(g_2020)$name, gdpPerCap$COUNTRY)
     V(g_2020)$GDPperCap &lt;- gdpPerCap$`2020`[idx]</code></pre>
 </div>
-<div id="ensure-same-country-oder-in-each-graph-object" class="section level3">
-<h3>Ensure same country oder in each graph object</h3>
-<p>For later visualization it is important to ensure that the order of
-the countries is the same in each graph objects (it may not have been
-the same in the dataframes, and thus the derived graph objects are
-likely to be different in their country order). Let’s do this step now
-before saving.</p>
-<pre class="r"><code>order_ref &lt;- V(g_1990)$name
-
-g_2000 &lt;- igraph::permute(g_2000, match(order_ref, V(g_2000)$name))
-g_2010 &lt;- igraph::permute(g_2010, match(order_ref, V(g_2010)$name))
-g_2020 &lt;- igraph::permute(g_2020, match(order_ref, V(g_2020)$name))</code></pre>
-</div>
 <div id="on-to-visualizations" class="section level3">
-<h3>On to visualizations</h3>
+<h3>On to Visualizations</h3>
 <p>Now that we have consolidated and updates our igraph objects, we are
 ready to begin making network visualizations. It was decided that this
 would be best demonstrated in and R pub, which can be seen here - <a href="https://rpubs.com/jtheblj/Step4_VisualizingNetworks">Step 4:

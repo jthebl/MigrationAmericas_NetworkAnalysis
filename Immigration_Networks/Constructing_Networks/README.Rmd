@@ -237,17 +237,5 @@ Given that the periods assessed in this analysis invovle migration at 10yr incre
     V(g_2020)$GDPperCap <- gdpPerCap$`2020`[idx]
 ```
 
-### Ensure same country oder in each graph object
-For later visualization it is important to ensure that the order of the countries is the same in each graph objects (it may not have been the same in the dataframes, and thus the derived graph objects are likely to be different in their country order). Let's do this step now before saving.
-```{r Ensuring Correct Country Order, include=TRUE}
-order_ref <- V(g_1990)$name
-
-g_2000 <- igraph::permute(g_2000, match(order_ref, V(g_2000)$name))
-g_2010 <- igraph::permute(g_2010, match(order_ref, V(g_2010)$name))
-g_2020 <- igraph::permute(g_2020, match(order_ref, V(g_2020)$name))
-
-```
-
-
-### On to visualizations
+### On to Visualizations
 Now that we have consolidated and updates our igraph objects, we are ready to begin making network visualizations. It was decided that this would be best demonstrated in and R pub, which can be seen here - [Step 4: Visualizing Networks](https://rpubs.com/jtheblj/Step4_VisualizingNetworks)
