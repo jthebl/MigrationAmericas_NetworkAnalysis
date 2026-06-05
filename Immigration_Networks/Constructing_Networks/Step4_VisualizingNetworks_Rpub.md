@@ -48,6 +48,7 @@ Now let's try visualing our networks using the simple plot() function
 
 This is certainly a rough-draft start, but here we can see how our networks can be visualized. Of note here is that the layouts for all networks are the same (i.e. the positions of th vertices are constant across all four years). This was achieved by defining the layout_preferred variable by using a the tkplot() function that allows for manual placement of the vertices. There are automatic algorithms that can do this (the most popular being the Fruchterman-Reingold algorithm), but it was deemed manual manipulation to allow for the most _comprehensible_ networks (obviously, a bit of a subjective decision in the end). 
 
+### Adjust Vertices, edges, and font sizes
 But, as the networks stand currently, they are not all that clear. Let's dig into the igraph functions by first adjusting the vertices, edges, and font sizes.
 
 
@@ -114,6 +115,8 @@ Above, we have adjusted the arrow (or edge) sizes, the sizes of the vertices (or
 
 It may be tempting to dig into some early _interpretations_ of migration trends from the networks visualized above. We certainly have many more modifications we can make to add more nuance and information to the visualizations. But appropriate now to see that each decade appears to demonstrate in increase in the total number of "degrees", that is the total number of arrows (which remember, each represents a net flow of migrants for at least 10,000). This therefore suggests that each decade has seen an increase in _net migration flows_ in the Americas (The reason for say _net migration_ and not just _migration flows_ is that it could be the case that there are actually fewer migrants overall, but just that there is more "one-sided" migration being observed in recent decades. However, further analysis of the raw data does demonstrate that there are a greater number of migrants in recent decades in the Americas, which has been reported [elsewhere](https://www.migrationpolicy.org/article/latin-america-caribbean-new-migration-era)).
 
+
+### Conditional Changes to Vertex Size - Degree Total
 Let's add some additional nuance and information to the networks, again by working with one of the networks. Let's modify the size of the vertices based on the total number of edges it has (i.e. its total "degree" score).
 
 
@@ -129,7 +132,10 @@ Let's add some additional nuance and information to the networks, again by worki
 
 ![](Step4_VisualizingNetworks_Rpub_files/figure-html/Plotting - Vertex size by Degree T-1.png)<!-- -->
 
-We added the mulitply _1.5_ to the vertex.size argument so as to make more of the vertices more pronounced (based on they underlying total degree score) but clearly the USA dominates the visualization, which makes sense given the sheer number of edges that start or end (the vast majority) at this vertex. If we want to maintain the size of the vertices, we can still visualize the total degree score via a gradient applied to the vertex colors
+We added the mulitply _1.5_ to the vertex.size argument so as to make more of the vertices more pronounced (based on they underlying total degree score) but clearly the USA dominates the visualization, which makes sense given the sheer number of edges that start or end (the vast majority) at this vertex. 
+
+### Conditional Changes to Vertex Color - Degree Total
+If we want to maintain the size of the vertices, we can still visualize the total degree score via a gradient applied to the vertex colors
 
 
 ``` r
@@ -155,4 +161,71 @@ We added the mulitply _1.5_ to the vertex.size argument so as to make more of th
 
 ![](Step4_VisualizingNetworks_Rpub_files/figure-html/Plotting - Vertex color by Degree Total-1.png)<!-- -->
 
-We may also wish to adjust the edges so that they too can reflect information. Specifically, can we add a _weight_ value to the edges such that they reflect how many migrants the edge represents. There are many ways to do this; either as an absolute number, or as a proportion of either the sending or receiving country's population. First, we need to add edge attributes to our graph. 
+### Conditional Changes to Edge Thickness - Weight of Migrant Flow
+We may also wish to adjust the edges so that they too can reflect information. Specifically, can we add a _weight_ value to the edges such that they reflect how many migrants the edge represents. There are many ways to do this; either as an absolute number, or as a proportion of either the origin or receiving country's population. Let's construct the Network basing the arrow thickness on the proportion of the origin country's population the migrant flow represents.
+
+
+``` r
+      # Now Plot
+      plot(g_1990,
+           main = "1990 \nEdge Thickness by Migrant flow as \nProportion of Origin Country Population",
+           layout = layout_preferred,
+           edge.arrow.size = .7,
+           edge.width = E(g_1990)$MigrationFlowWeight_PropOrg/10,
+           vertex.size = 20,
+           vertex.color = V(g_1990)$ColorDT,
+           vertex.label.font = 2,
+           vertex.label = V(g_1990)$code)
+```
+
+![](Step4_VisualizingNetworks_Rpub_files/figure-html/Plotting - Edge Thickness based on Migrant Flow-1.png)<!-- -->
+
+And now let's see all four decades together:
+
+``` r
+# Allow all four networks to be visualized together
+  par(mfrow = c(2, 2), mar = c(1, 1, 2, 1))
+
+# Now plot the networks
+  plot(g_1990, 
+       main = "1990",
+           layout = layout_preferred,
+           edge.arrow.size = .7,
+           edge.width = E(g_1990)$MigrationFlowWeight_PropOrg/15,
+           vertex.size = 20,
+           vertex.color = V(g_1990)$ColorDT,
+           vertex.label.font = 2,
+           vertex.label = V(g_1990)$code)
+  
+  plot(g_2000, 
+       main = "2000",
+           layout = layout_preferred,
+           edge.arrow.size = .7,
+           edge.width = E(g_2000)$MigrationFlowWeight_PropOrg/15,
+           vertex.size = 20,
+           vertex.color = V(g_2000)$ColorDT,
+           vertex.label.font = 2,
+           vertex.label = V(g_2000)$code)
+  
+  plot(g_2010, 
+       main = "2010",
+           layout = layout_preferred,
+           edge.arrow.size = .7,
+           edge.width = E(g_2010)$MigrationFlowWeight_PropOrg/15,
+           vertex.size = 20,
+           vertex.color = V(g_2010)$ColorDT,
+           vertex.label.font = 2,
+           vertex.label = V(g_2010)$code)
+  
+  plot(g_2020, 
+       main = "2020",
+           layout = layout_preferred,
+           edge.arrow.size = .7,
+           edge.width = E(g_2020)$MigrationFlowWeight_PropOrg/15,
+           vertex.size = 20,
+           vertex.color = V(g_2020)$ColorDT,
+           vertex.label.font = 2,
+           vertex.label = V(g_2020)$code)
+```
+
+![](Step4_VisualizingNetworks_Rpub_files/figure-html/Plot - Edge Thickness All Networks-1.png)<!-- -->
