@@ -299,6 +299,8 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
         
         # Extract GDP values
         gdp_vals_1990 <- V(g_1990)$GDPperCap
+        gdp_vals_2000 <- V(g_2000)$GDPperCap
+        gdp_vals_2010 <- V(g_2010)$GDPperCap
         gdp_vals_2020 <- V(g_2020)$GDPperCap
         
         # Create palette
@@ -308,16 +310,38 @@ AM_2020 <- read.xlsx("Migration_Data/Matrices/DifferenceMatrices_2020.xlsx",
         gdp_scaled_1990 <- scales::rescale(gdp_vals_1990, to = c(1, 5))
         gdp_scaled_1990 <- round(gdp_scaled_1990)
         
+        gdp_scaled_2000 <- scales::rescale(gdp_vals_2000, to = c(1, 5))
+        gdp_scaled_2000 <- round(gdp_scaled_2000)
+        
+        gdp_scaled_2010 <- scales::rescale(gdp_vals_2010, to = c(1, 5))
+        gdp_scaled_2010 <- round(gdp_scaled_2010)
+        
         gdp_scaled_2020 <- scales::rescale(gdp_vals_2020, to = c(1, 5))
         gdp_scaled_2020 <- round(gdp_scaled_2020)
         
         # Assign colors
         V(g_1990)$ColorGDP <- color_palette_GDP[gdp_scaled_1990]
-        
+        V(g_2000)$ColorGDP <- color_palette_GDP[gdp_scaled_2000]
+        V(g_2010)$ColorGDP <- color_palette_GDP[gdp_scaled_2010]
         V(g_2020)$ColorGDP <- color_palette_GDP[gdp_scaled_2020]
         
 
   ### Edge Attributes ----
+        
+    ### Load EdgeLists ----
+        
+        # 1990
+        el_1990 <- read.csv("Constructing_Networks/Edgelists/EdgeList_1990.csv") # load the csv edgelist
+        
+        # 2000
+        el_2000 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2000.csv") # load the csv edgelist
+        
+        # 2010
+        el_2010 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2010.csv") # load the csv edgelist
+        
+        # 2020
+        el_2020 <- read.csv("Constructing_Networks/Edgelists/EdgeList_2020.csv") # load the csv edgelist
+        
     ### migration flow "weight(s)" ----
         
         E(g_1990)$MigrationFlowWeight <- el_1990$Immigration_absolute
